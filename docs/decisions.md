@@ -24,3 +24,4 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: Python added as the "lab": reference physics, FastF1 validation against real 2023 RB19 telemetry, data prep. It runs offline/CI only; the browser app stays TypeScript and must match Python's golden results. (Chosen over a Python server or Pyodide: keeps the app fast, free to host and offline.)
 - 2026-10-17: Raw FastF1 data stays in a git-ignored cache; only small derived results (lap times, downsampled traces, fitted parameters) are committed.
 - 2026-10-17: After every step, Claude posts a step report in chat (format in `docs/workflow.md`).
+- 2026-10-17: Step 3b: the whole RB19 (exterior + internals) is built in code first: FIA-sized and test-checked, realistic + hologram + X-ray. AI/Blender parts can later replace individual code parts where they look better.

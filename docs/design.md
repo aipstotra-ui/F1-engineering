@@ -21,3 +21,9 @@ Translucent glass panels with corner brackets and thin animated tick marks (HUD 
 - **Exploded view:** click a part → its sub-parts move apart along preset vectors, with leader-line labels and a lesson card.
 - **Guided build:** the next part's slot glows as a ghost outline; drag or click the tray part → snap animation (ease-out + small settle) → lesson card.
 - Hover highlights a part with a subtle rim light (realistic) or brighter glow (hologram).
+
+## Code-built car (Step 3b)
+- Materials live in `src/scene/materials.ts`, one shared instance per (material, view mode, variant). Variants: normal, highlight (picked/hovered), ghost (X-ray outer shell).
+- X-ray ghosts the outer shell (`OUTER_SHELL` in `src/parts/rb19/index.ts`) and makes it ignore clicks, so internals can be picked.
+- Dev only: `?cam=x,y,z` in the URL sets the starting camera, for screenshots from fixed angles (e.g. side `0.2,0.9,7.5`, top `0.36,9,0.01`).
+
