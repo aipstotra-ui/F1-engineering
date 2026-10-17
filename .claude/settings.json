@@ -17,7 +17,10 @@
       "Bash(npx gltf-transform:*)",
       "Bash(node scripts/clean-part.mjs:*)",
       "Bash(npm view:*)",
-      "Bash(/Users/aic/.claude/skills/gstack/browse/dist/browse:*)"
+      "Bash(/Users/aic/.claude/skills/gstack/browse/dist/browse:*)",
+      "Bash(uv run --directory lab pytest:*)",
+      "Bash(uv run --directory lab ruff:*)",
+      "Bash(uv run --directory lab pip-audit:*)"
     ],
     "deny": [
       "Bash(git push origin main:*)",

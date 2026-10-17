@@ -1,7 +1,22 @@
 # Architecture
 
 ## Stack
-Vite + React + TypeScript · three.js via @react-three/fiber, @react-three/drei, @react-three/postprocessing · Zustand · zod (validates untrusted input) · Recharts · Vitest · oxlint · Playwright · @gltf-transform/cli. Hosting: GitHub Pages or Vercel.
+**App (browser):** Vite + React + TypeScript · three.js via @react-three/fiber, @react-three/drei, @react-three/postprocessing · Zustand · zod (validates untrusted input) · Recharts · Vitest · oxlint · Playwright · @gltf-transform/cli. Hosting: Vercel (connected to the repo; PR previews).
+
+**Python lab (your computer + CI):** Python 3.13 managed by uv · NumPy · SciPy · pandas · FastF1 (real timing/telemetry) · matplotlib (validation plots) · pytest · ruff. Never shipped to the browser.
+
+## Who does what: TypeScript vs Python
+| Job | Language | Why |
+|---|---|---|
+| Everything the user sees and touches: 3D car, build mode, panels, lessons | TypeScript | Only JavaScript runs in the browser |
+| Live physics while tuning (stats, lap sim, replays) | TypeScript | Must answer instantly in the browser |
+| Reference physics (the trusted version) | Python | NumPy/SciPy make it easier to write correctly and check |
+| Validation against real 2023 RB19 telemetry | Python | FastF1 provides the real data |
+| Fitting unknown car parameters (aero, tyres, ERS use) | Python | SciPy optimisation and curve fitting |
+| Track preparation (outline → curvature, elevation) | Python | Numerical processing + plotting to check |
+| 3D part clean-up (.glb) | JavaScript (gltf-transform) | The best glTF tooling is in JS |
+
+Rule of thumb: **if it runs while the user is using the app, it's TypeScript; if it produces or checks the numbers, it's Python.** Python's results reach the app only as exported JSON.
 
 ## Folders
 ```
@@ -14,7 +29,14 @@ src/
   build/      BuildMode, PartsTray, GhostSlot, SnapAnimation, PlacementTool (dev only)
   ui/         HudPanel, Slider, SpecPicker, StatReadout, LessonCard, ModeToggle, theme.css (tokens)
   screens/    Garage, Build, Section, WindTunnel, TrackTest, Race, Learn, Missions
+  data/generated/  JSON exported by the Python lab (circuits, fitted car parameters). Never edit by hand.
+  sim/__golden__/  golden results from the Python reference sim, used by TS tests
 public/models/parts/   cleaned .glb files, one per AI part
+lab/                   Python lab (uv project)
+  f1lab/      tracks.py, telemetry.py (FastF1), reference_sim.py, fit.py, export.py
+  tests/      pytest; tests needing internet are marked `network` and skipped in CI
+  notebooks/  optional exploration; results that matter move into f1lab/
+  .cache/     FastF1 download cache (git-ignored)
 ```
 
 ## Data flow
@@ -23,6 +45,11 @@ parts.ts (catalog) ─┐
 rb19.ts (stock)  ───┼─> carStore (CarConfig + build state) ─> sim/ (pure functions) ─> stats, lap, telemetry
 user input (UI) ────┘                │
                                      └─> scene/parts (render: which parts, which spec, adjustments, view mode)
+```
+**Python → TypeScript:**
+```
+FastF1 telemetry + track outlines ─> lab/f1lab (fit + reference sim) ─> src/data/generated/*.json ─> sim/ (TS)
+                                                                    └─> src/sim/__golden__/*.json ─> Vitest: TS must match Python
 ```
 - **`CarConfig`** = chosen spec per part + adjustable values (flap angles, ride height, stiffness, brake bias, ERS mode, tyre compound).
 - `sim/` functions are pure: `(CarConfig, Circuit) → Result`. There are no globals and no randomness unless it's seeded.

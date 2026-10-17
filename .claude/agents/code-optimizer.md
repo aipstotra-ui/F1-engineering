@@ -15,6 +15,7 @@ Check:
 4. Loading: .glb not lazy-loaded per section; missing `useGLTF.preload` for the current section; textures > 1024 px; .glb > 2 MB (`ls -lh public/models/parts`).
 5. Bundle: large imports that could be split (`npm run build` output, if available).
 6. Leaks: manually created geometries/render targets not disposed.
+7. Python lab (if changed): Python loops over arrays that should be NumPy-vectorised; repeated FastF1 downloads that should hit the cache.
 
 Only report issues with a real cost; skip micro-optimisations. Bash is read-only (ls, du, build, git diff). Never edit.
 

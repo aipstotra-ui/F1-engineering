@@ -10,7 +10,7 @@ Scope: only the changed files you are given (get the diff with `git diff main...
 
 Check, in priority order:
 1. Bugs: wrong logic, unhandled null/undefined, off-by-one, stale React state, effects with missing deps, async races.
-2. Type safety: `any`, unchecked casts, non-null assertions hiding real cases. Run `npx tsc --noEmit` if a tsconfig exists.
+2. Type safety: TS `any`, unchecked casts, non-null assertions hiding real cases (run `npx tsc --noEmit`). Python: missing type hints, bare `except`, mutable default args (run `uv run --directory lab ruff check`).
 3. Architecture: `src/sim/` imports no React/three; UI doesn't compute physics; part data lives in `src/data/parts.ts`.
 4. Readability for a beginner: unclear names, functions over ~40 lines, clever one-liners, comments that are missing where the *why* is non-obvious.
 5. Dead code, duplication that has a clear existing helper.

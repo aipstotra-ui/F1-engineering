@@ -11,3 +11,15 @@ assets-raw/
 !.vscode/extensions.json
 .idea
 .gstack/
+lab/.cache/
+.venv/
+.ipynb_checkpoints/
+lab/**/*.parquet
+lab/**/*.pkl
+lab/**/*.ff1pkl
+lab/**/*.feather
+lab/**/*.sqlite
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/

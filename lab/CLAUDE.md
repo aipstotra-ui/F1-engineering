@@ -1,0 +1,12 @@
+# lab/ rules (Python lab)
+- Python 3.13 via uv. From the repo root run `uv run --directory lab <tool>` (pytest, ruff, pip-audit, scripts). Add packages with `uv add`, never pip; pin dev tools (pytest, ruff, pip-audit) in `uv.lock`.
+- Type hints on every function; `ruff check` + `ruff format` clean.
+- SI units internally (m, kg, s, N, W, J, rad); name units when unclear: `speed_mps`, `power_w`.
+- Every F1 constant cites a fact ID: `MIN_MASS_KG = 798  # F-001`. Values come from `docs/facts.md`.
+- Deterministic: no unseeded randomness; same inputs → same exported files.
+- Tests needing internet (FastF1 downloads) are marked `@pytest.mark.network` and skipped in CI. FastF1 cache lives in `lab/.cache/` (git-ignored).
+- Exports go to `src/data/generated/` and `src/sim/__golden__/` with a header field `"generatedBy": "lab/<script>"`. Never hand-edit them; re-run the export.
+- Commit only small derived data (lap times, downsampled traces, fitted parameters), never raw telemetry. A pytest guard caps each exported JSON (≤200 KB) and checks its keys.
+- Notebooks: strip outputs before committing (nbstripout), so no raw data hides in cell output.
+- Register the `network` marker in `pyproject.toml` and use `--strict-markers`.
+- Model and validation targets: `docs/physics.md`.
