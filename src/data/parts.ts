@@ -84,8 +84,6 @@ export const CAR_INTRO = {
   facts: ['F-034', 'F-001', 'F-029'] as FactId[],
 }
 
-const ORIGIN: Part['attach'] = { position: [0, 0, 0], rotation: [0, 0, 0] }
-
 type PartInput = Omit<Part, 'buildStep' | 'attach' | 'model'>
 
 // Listed in build order; buildStep, attach and model path are filled in below.
@@ -98,7 +96,7 @@ const PART_LIST: PartInput[] = [
     source: 'ai',
     lesson: {
       text:
-        'The survival cell is the carbon-fibre core of the car. It holds the fuel tank, the cockpit and part ' +
+        'The survival cell is the composite core of the car. It holds the fuel tank, the cockpit and part ' +
         'of the hybrid battery, and everything else bolts onto it. It must protect the driver in a crash, so it is ' +
         'very strong and stiff.',
       facts: ['F-031'],
@@ -182,7 +180,7 @@ const PART_LIST: PartInput[] = [
       text:
         'The internal combustion engine burns fuel to make most of the car’s power. It is a 1.6-litre (1600 cc) ' +
         'engine with six cylinders in a 90° V, each 80 mm wide, and the fuel it may burn is limited to 100 kg per ' +
-        'hour. The whole power unit must weigh at least 151 kg. In the RB19 it was the Honda RBPTH001.',
+        'hour. The whole power unit must weigh at least 151 kg. In the RB19 it was the Honda RBPTH 001.',
       facts: ['F-003', 'F-004', 'F-005', 'F-007', 'F-014', 'F-032'],
     },
     simEffects: ['power', 'mass'],
@@ -263,8 +261,9 @@ const PART_LIST: PartInput[] = [
     lesson: {
       text:
         'The gearbox has 8 forward gears and keeps the engine in its best speed range, from a slow hairpin to full ' +
-        'speed on a straight. Its casing is also structural: the rear suspension and rear wing are mounted on it.',
-      facts: ['F-018'],
+        'speed on a straight. Its case is also structural: it carries the rear impact structure and takes the ' +
+        'suspension and aerodynamic loads.',
+      facts: ['F-018', 'F-038'],
     },
     simEffects: ['mass', 'power'],
   },
@@ -415,9 +414,10 @@ const PART_LIST: PartInput[] = [
     source: 'code',
     lesson: {
       text:
-        'The plank is a strip fitted under the floor. It wears down if the car runs too low, and the FIA measures ' +
-        'it after the race, so it stops teams running dangerously close to the ground.',
-      facts: ['F-028'],
+        'The plank is a strip fitted under the floor. It is 10 mm thick when new and must still be at least 9 mm ' +
+        'after use, measured at four holes. If the car runs too low it scrapes the track and wears the plank, so ' +
+        'this rule limits how low teams can run.',
+      facts: ['F-028', 'F-037'],
     },
     simEffects: ['downforce'],
   },
@@ -485,7 +485,7 @@ const PART_LIST: PartInput[] = [
     lesson: {
       text:
         'The front wing makes downforce on the front tyres and directs air around the wheels and under the floor. ' +
-        'It may have at most 4 elements. More flap angle gives more front grip and moves the aero balance forward.',
+        'It may have at most 4 profiles (wing elements). More flap angle gives more front grip and moves the aero balance forward.',
       facts: ['F-026'],
     },
     simEffects: ['downforce', 'drag', 'aeroBalance'],
@@ -598,7 +598,7 @@ const PART_LIST: PartInput[] = [
 export const PARTS: Part[] = PART_LIST.map((part, index) => ({
   ...part,
   buildStep: index + 1,
-  attach: ORIGIN,
+  attach: { position: [0, 0, 0], rotation: [0, 0, 0] }, // fresh object per part; set in Step 7
   model: part.source === 'ai' ? `/models/parts/${part.id}.glb` : undefined,
 }))
 

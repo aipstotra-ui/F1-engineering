@@ -33,6 +33,11 @@ describe('part catalog', () => {
     }
   })
 
+  it('gives every part its own attach object (so moving one part never moves another)', () => {
+    const attaches = new Set(PARTS.map((part) => part.attach))
+    expect(attaches.size).toBe(PARTS.length)
+  })
+
   it('only points to parent parts that exist', () => {
     const ids = new Set(PARTS.map((part) => part.id))
     for (const part of PARTS) {
@@ -52,7 +57,10 @@ describe('facts in lessons', () => {
     for (const id of facts) expect(factIdsInDoc.has(id), id).toBe(true)
   })
 
+  // Catches digits and common number words; the f1-fact-checker agent reviews the rest.
+  const NUMBER = /\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|twice)\b/i
+
   it.each(lessons)('$id cites a fact for every number in its text', ({ text, facts }) => {
-    if (/\d/.test(text)) expect(facts.length).toBeGreaterThan(0)
+    if (NUMBER.test(text)) expect(facts.length).toBeGreaterThan(0)
   })
 })

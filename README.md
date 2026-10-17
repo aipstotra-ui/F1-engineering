@@ -2,7 +2,7 @@
 
 Build a realistic Red Bull RB19 part by part, like Lego, learning what every part does. Then tune it and test it on track with a lap simulator, wind tunnel and head-to-head races. Switch to a holographic view for analysis.
 
-Status: Step 1 (app scaffold). Roadmap: [PLAN.md](PLAN.md).
+Status: Step 2 (part catalog). Roadmap: [PLAN.md](PLAN.md).
 
 ## Run it
 ```bash

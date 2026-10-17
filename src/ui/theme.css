@@ -162,10 +162,10 @@ body {
   margin: 0 0 6px;
 }
 
-.part-specs {
+.catalog-section .part-specs {
   margin: 0 0 6px;
-  padding-left: 1rem !important;
-  list-style: disc !important;
+  padding-left: 1rem;
+  list-style: disc;
 }
 
 .part-facts {
