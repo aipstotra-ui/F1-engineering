@@ -1,5 +1,8 @@
-import { Stage } from './scene/Stage.tsx'
+import { lazy, Suspense } from 'react'
 import { Footer } from './ui/Footer.tsx'
+
+// The 3D code (three.js) is large, so it loads after the header and footer have appeared.
+const Stage = lazy(() => import('./scene/Stage.tsx'))
 
 export default function App() {
   return (
@@ -9,7 +12,9 @@ export default function App() {
         <p>Build, tune and test the Red Bull RB19</p>
       </header>
       <main className="app-stage">
-        <Stage />
+        <Suspense fallback={<div className="stage-fallback">Loading 3D view…</div>}>
+          <Stage />
+        </Suspense>
       </main>
       <Footer />
     </div>

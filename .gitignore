@@ -10,3 +10,4 @@ assets-raw/
 .vscode/*
 !.vscode/extensions.json
 .idea
+.gstack/

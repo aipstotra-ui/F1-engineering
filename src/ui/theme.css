@@ -60,3 +60,12 @@ body {
   font-size: 0.75rem;
   color: var(--text-dim);
 }
+
+.stage-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-dim);
+}
