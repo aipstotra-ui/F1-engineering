@@ -2,6 +2,10 @@
 
 All constants come from `docs/facts.md` by ID. This file holds the model and its assumptions, not the numbers.
 
+## Two implementations
+1. **Python reference (`lab/f1lab/reference_sim.py`).** Written first and kept simple and readable, it's the trusted version. Its parameters that regulations don't fix (drag/downforce coefficients, tyre grip, ERS deployment shape) are **fitted to real 2023 RB19 telemetry** from FastF1.
+2. **TypeScript port (`src/sim/`).** It runs live in the browser and must match the Python golden results (lap time within 0.1%, speed trace within 1 km/h RMS).
+
 ## Car model
 - **Mass & balance.** Total mass, longitudinal weight distribution, centre-of-gravity height.
 - **Aero.** Downforce `F_z = ½ ρ v² · ClA` and drag `F_d = ½ ρ v² · CdA`. `ClA`/`CdA` come from the chosen wing specs, flap angles and floor state; aero balance is the front share of `F_z`.
@@ -17,8 +21,15 @@ All constants come from `docs/facts.md` by ID. This file holds the model and its
 4. **Backward pass:** brake, limited by grip + drag.
 5. The speed at each point is the minimum of the three passes. Lap time = Σ ds / v. Outputs speed, throttle, brake, gear and ERS state-of-charge traces.
 
-## Validation targets (tests in `src/sim/*.test.ts`)
-- Stock RB19 within ±5% of the real 2023 qualifying pole at Monza, Monaco and Silverstone (pole times live in `facts.md`).
+## Validation targets
+**Python (`lab/tests/`), against reality:**
+- Stock RB19 lap within ±2% of Verstappen's real 2023 qualifying lap at Monza, Monaco and Silverstone (times in `facts.md`).
+- Simulated speed trace vs. real telemetry: RMS error reported per circuit, with minimum corner speeds and top speeds compared.
+
+**TypeScript (`src/sim/*.test.ts`), against Python:**
+- Golden configs match within the tolerances above.
+
+**Both:**
 - More wing angle → more downforce and more drag; slower at Monza, faster at Monaco.
 - More power → higher top speed; more mass → slower lap.
 - Ride height below the stall threshold → lap time gets worse.

@@ -11,3 +11,9 @@ assets-raw/
 !.vscode/extensions.json
 .idea
 .gstack/
+lab/.cache/
+lab/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/

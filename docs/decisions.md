@@ -20,4 +20,7 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: Tooling: Vite 8, React 19, TypeScript 6 (strict), oxlint, Vitest; CI on Node 22. The 3D view is lazy-loaded behind an error boundary (WebGL fallback message).
 - 2026-10-17: npm install scripts stay blocked (only fsevents wants one; not needed).
 - 2026-10-17: Repo made public (GitHub Actions minutes were blocked on the private repo). Vercel is connected to the repo; PR previews can be used for visual checks.
-- 2026-10-17: Sources: FIA 2023 Technical Regulations Issue 7 is the primary source; pole times and ERS energy limits are deferred to Step 12 (physics).
+- 2026-10-17: Sources: FIA 2023 Technical Regulations Issue 7 is the primary source; pole times and ERS energy limits are deferred to the Python lab (Steps 11–12).
+- 2026-10-17: Python added as the "lab": reference physics, FastF1 validation against real 2023 RB19 telemetry, data prep. It runs offline/CI only; the browser app stays TypeScript and must match Python's golden results. (Chosen over a Python server or Pyodide: keeps the app fast, free to host and offline.)
+- 2026-10-17: Raw FastF1 data stays in a git-ignored cache; only small derived results (lap times, downsampled traces, fitted parameters) are committed.
+- 2026-10-17: After every step, Claude posts a step report in chat (format in `docs/workflow.md`).
