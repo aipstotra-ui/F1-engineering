@@ -12,6 +12,7 @@
 AI tools do poorly on thin, sharp shapes, so those parts are built in code.
 
 ## AI part steps (free tools only)
+0. **Safety first.** Run `node scripts/check-glb.mjs <file>` on every downloaded/generated .glb before opening it anywhere else.
 1. **Reference image.** One part on a plain background, 3/4 view. Use a generated image or the user's own photo/sketch.
 2. **Generate.** Use Hunyuan3D or TRELLIS (free online demos), or the free tiers of Meshy/Tripo. Export GLB. Try 2–3 times and keep the best.
 3. **Store the raw file** at `assets-raw/<part-id>.glb`, untracked by git.
@@ -19,6 +20,17 @@ AI tools do poorly on thin, sharp shapes, so those parts are built in code.
 5. **Save** to `public/models/parts/<part-id>.glb`, add a catalog stub in `src/data/parts.ts`, and add a row below.
 6. **Fit** the part on the car with the dev placement tool (Step 7); it saves `attach` into the catalog.
 7. **Fallback.** If a part is still too rough after 3 tries, mark it `source: 'code'` and build a simpler version.
+
+## Tools and limits (checked 2026-10-17)
+| Tool | Use | Licence | Limit |
+|---|---|---|---|
+| FLUX.1-schnell (HF Space) | Reference pictures | Apache-2.0 | Good for common objects; poor for niche F1 parts (caliper/sidepod attempts had fake logos or whole cars) |
+| Hunyuan3D 2.1 (HF Space) | Image → textured 3D (PBR) | Tencent Hunyuan Community (outputs usable; licence excludes EU, UK, South Korea) | ~270 s GPU per run |
+| TRELLIS.2 (HF Space) | Image → textured 3D | MIT | GPU per run similar |
+| Hugging Face ZeroGPU | Runs the Spaces | — | Anonymous: a few images/day. Free account: ~4–5 min/day (≈1 part/day; failed runs still count). PRO: 40 min/day |
+| Blender + MCP for Blender v2.1.9 | Finishing: clean-up, splitting, precise modelling, real materials | MIT (Blender: GPL) | Local, free |
+
+**MCP for Blender safety review (v2.1.9, 2026-10-17):** PyPI wheel identical to reviewed GitHub source; add-on socket binds `localhost:9876` only; telemetry consent defaults off, and the server runs with `DISABLE_TELEMETRY=true`; no self-update unless `update` is run by hand; by design it executes Python sent by Claude inside Blender, so start its server only while working. Verified add-on copy: `assets-raw/tools/blender_mcp_addon_v2.1.9.py` (git-ignored). Third-party integrations (Hyper3D, Sketchfab, Tencent cloud, Poly Pizza) stay off unless a key is added; Poly Haven (CC0) needs no key.
 
 ## Safety checks (security-checker)
 - No external URIs in the GLB (all buffers and images embedded).

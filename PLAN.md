@@ -2,10 +2,10 @@
 
 ## Now
 - **Current step:** 3. AI part test (branch `step-03-ai-part-test`)
-- **Done so far:** reference pictures (FLUX), `scripts/check-glb.mjs` safety checker, `scripts/clean-part.mjs`, "AI part test" screen (`#part-test`).
-- **Next action:** User logs in to Hugging Face (`uvx --from huggingface_hub hf auth login`), then generate turbo/caliper/sidepod on Hunyuan3D-2 and TRELLIS.2, check, clean, compare.
-- **Open questions:** none
-- **Blocked on:** Hugging Face GPU quota (anonymous allowance used up)
+- **Done so far:** turbo + caliper reference pictures, GLB safety checker + clean-up script (tested), "AI part test" screen, HF login, MCP for Blender reviewed.
+- **Next action:** (1) User installs Blender + verified add-on, then register MCP for Blender (local scope, `DISABLE_TELEMETRY=true`) and restart session. (2) Generate turbo + caliper on Hunyuan3D 2.1 / TRELLIS.2 when GPU quota allows. (3) Model sidepod in Blender.
+- **Open questions:** free daily GPU (~1 part/day) vs. HF PRO (40 min/day)
+- **Blocked on:** HF free GPU quota (resets ~24 h after 2026-10-17 00:40)
 
 ---
 
