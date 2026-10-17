@@ -26,4 +26,4 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: After every step, Claude posts a step report in chat (format in `docs/workflow.md`).
 - 2026-10-17: 3D quality pipeline = AI base shapes (Hunyuan3D 2.1 / TRELLIS.2) + finishing and precise modelling in Blender via MCP for Blender (reviewed v2.1.9, telemetry disabled, project-local). Smooth bodywork like sidepods is modelled in Blender rather than generated.
 - 2026-10-17: Every generated/downloaded .glb passes `scripts/check-glb.mjs` before use.
-
+- 2026-10-17: Stay on the free Hugging Face tier: one AI 3D run per day from the queue in `docs/parts-pipeline.md`; Blender covers finishing and bodywork.

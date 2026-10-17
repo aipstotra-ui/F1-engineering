@@ -37,6 +37,15 @@ AI tools do poorly on thin, sharp shapes, so those parts are built in code.
 - File ≤ 5 MB hard cap; no unexpected extensions.
 - Generated only from the tools listed above.
 
+## Daily AI queue (free tier: one 3D run per day)
+Run `uv run scripts/ai-parts/generate.py <tool> <part>`, then `node scripts/check-glb.mjs` on the result.
+| # | Part | Tool | Status |
+|---|---|---|---|
+| 1 | turbocharger | hunyuan3d-2.1 | to do |
+| 2 | turbocharger | trellis.2 | to do |
+| 3 | brake-caliper | winner of 1–2 | to do |
+| — | sidepods | Blender (hand-modelled) | waits for Blender |
+
 ## Part sources & licences
 | Part ID | Tool | Date | Licence / terms | Notes |
 |---|---|---|---|---|

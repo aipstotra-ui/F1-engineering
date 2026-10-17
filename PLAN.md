@@ -4,7 +4,7 @@
 - **Current step:** 3. AI part test (branch `step-03-ai-part-test`)
 - **Done so far:** turbo + caliper reference pictures, GLB safety checker + clean-up script (tested), "AI part test" screen, HF login, MCP for Blender reviewed.
 - **Next action:** (1) User installs Blender + verified add-on, then register MCP for Blender (local scope, `DISABLE_TELEMETRY=true`) and restart session. (2) Generate turbo + caliper on Hunyuan3D 2.1 / TRELLIS.2 when GPU quota allows. (3) Model sidepod in Blender.
-- **Open questions:** free daily GPU (~1 part/day) vs. HF PRO (40 min/day)
+- **Open questions:** none (free tier chosen; daily queue in `docs/parts-pipeline.md`)
 - **Blocked on:** HF free GPU quota (resets ~24 h after 2026-10-17 00:40)
 
 ---

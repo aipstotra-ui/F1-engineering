@@ -20,8 +20,14 @@ export function PartTest() {
       </nav>
       <div className="part-test-body">
         <figure className="part-test-reference">
-          <img src={part.reference} alt={`Reference picture: ${part.name}`} />
-          <figcaption>Reference picture (input for the generators)</figcaption>
+          {part.reference ? (
+            <>
+              <img src={part.reference} alt={`Reference picture: ${part.name}`} />
+              <figcaption>Reference picture (input for the generators)</figcaption>
+            </>
+          ) : (
+            <figcaption>No AI reference: this part is modelled by hand in Blender.</figcaption>
+          )}
         </figure>
         <div className="part-test-viewer">
           {candidates.length === 0 ? (
