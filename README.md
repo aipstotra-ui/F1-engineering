@@ -11,6 +11,6 @@ npm run dev
 ```
 Then open http://localhost:5173. Other commands: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`.
 
-The Python lab (`lab/`, from Step 11) uses [uv](https://docs.astral.sh/uv/): `cd lab && uv run pytest`.
+The Python lab (`lab/`, from Step 11) uses [uv](https://docs.astral.sh/uv/): `uv run --directory lab pytest`.
 
 Fan-made educational project, not affiliated with Formula 1, the FIA or Red Bull Racing.

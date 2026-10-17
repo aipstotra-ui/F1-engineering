@@ -4,7 +4,7 @@
 1. **Orient.** Read the `PLAN.md` "Now" block plus only the docs `CLAUDE.md` routes to for this step.
 2. **Branch.** `git checkout -b step-NN-short-name` from an up-to-date `main`.
 3. **Build.** Small commits. Explain every new file to the user in 1–2 plain sentences.
-4. **Self-check.** `npm test`, `npm run typecheck` and `npm run lint` must all pass. If `lab/` changed: `uv run ruff check`, `uv run ruff format --check` and `uv run pytest` (inside `lab/`).
+4. **Self-check.** `npm test`, `npm run typecheck` and `npm run lint` must all pass. If `lab/` changed: `uv run --directory lab ruff check`, `uv run --directory lab ruff format --check` and `uv run --directory lab pytest -m "not network"`.
 5. **Checkers.** Pick agents from the trigger table in `CLAUDE.md` using `git diff --name-only main...HEAD`. If visual-qa is triggered, first start `npm run dev` in the background. Launch them **in parallel in one message** and give each one the changed file list (plus the new/changed fact IDs for f1-fact-checker).
 6. **Fix.** The main agent fixes the findings, then re-runs only the checkers that reported a blocker.
 7. **Record.** Tick the step in `PLAN.md` and update its **Now** block. Append any new decision to `docs/decisions.md`. Add new facts to `docs/facts.md`.

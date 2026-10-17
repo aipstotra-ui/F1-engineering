@@ -23,11 +23,11 @@ All constants come from `docs/facts.md` by ID. This file holds the model and its
 
 ## Validation targets
 **Python (`lab/tests/`), against reality:**
-- Stock RB19 lap within ±2% of Verstappen's real 2023 qualifying lap at Monza, Monaco and Silverstone (times in `facts.md`).
+- Stock RB19 lap within ±2% of Verstappen's best 2023 qualifying lap in the RB19 at Monza, Monaco and Silverstone (times in `facts.md`). This is the RB19 reference, which isn't always the pole (Sainz took Monza pole).
 - Simulated speed trace vs. real telemetry: RMS error reported per circuit, with minimum corner speeds and top speeds compared.
 
 **TypeScript (`src/sim/*.test.ts`), against Python:**
-- Golden configs match within the tolerances above.
+- Golden configs match within ≤0.1% lap time and ≤1 km/h RMS speed.
 
 **Both:**
 - More wing angle → more downforce and more drag; slower at Monza, faster at Monaco.

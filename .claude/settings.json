@@ -18,9 +18,9 @@
       "Bash(node scripts/clean-part.mjs:*)",
       "Bash(npm view:*)",
       "Bash(/Users/aic/.claude/skills/gstack/browse/dist/browse:*)",
-      "Bash(uv run pytest:*)",
-      "Bash(uv run ruff:*)",
-      "Bash(uvx pip-audit:*)"
+      "Bash(uv run --directory lab pytest:*)",
+      "Bash(uv run --directory lab ruff:*)",
+      "Bash(uv run --directory lab pip-audit:*)"
     ],
     "deny": [
       "Bash(git push origin main:*)",

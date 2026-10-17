@@ -5,6 +5,19 @@
 
 **Python lab (your computer + CI):** Python 3.13 managed by uv · NumPy · SciPy · pandas · FastF1 (real timing/telemetry) · matplotlib (validation plots) · pytest · ruff. Never shipped to the browser.
 
+## Who does what: TypeScript vs Python
+| Job | Language | Why |
+|---|---|---|
+| Everything the user sees and touches: 3D car, build mode, panels, lessons | TypeScript | Only JavaScript runs in the browser |
+| Live physics while tuning (stats, lap sim, replays) | TypeScript | Must answer instantly in the browser |
+| Reference physics (the trusted version) | Python | NumPy/SciPy make it easier to write correctly and check |
+| Validation against real 2023 RB19 telemetry | Python | FastF1 provides the real data |
+| Fitting unknown car parameters (aero, tyres, ERS use) | Python | SciPy optimisation and curve fitting |
+| Track preparation (outline → curvature, elevation) | Python | Numerical processing + plotting to check |
+| 3D part clean-up (.glb) | JavaScript (gltf-transform) | The best glTF tooling is in JS |
+
+Rule of thumb: **if it runs while the user is using the app, it's TypeScript; if it produces or checks the numbers, it's Python.** Python's results reach the app only as exported JSON.
+
 ## Folders
 ```
 src/

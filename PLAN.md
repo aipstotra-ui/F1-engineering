@@ -33,8 +33,8 @@ Build a realistic Red Bull RB19 part by part, learn what each part does, tune it
 
 ## Phase E: Python lab + engineering & testing
 - [ ] **10. Specs + tuning.** Spec picker (swaps parts) + sliders for real adjustables.
-- [ ] **11. Python lab setup + real data.** `lab/` with uv, ruff, pytest and a CI job. FastF1 pulls RB19 2023 qualifying laps (Monza, Monaco, Silverstone); track outlines become circuit files; pole times and ERS limits get sourced in `facts.md`. *Check:* `uv run pytest` passes; a plot of Verstappen's real Monza speed trace.
-- [ ] **12. Reference physics (Python).** NumPy/SciPy lap solver; aero, power and tyre parameters fitted to the real telemetry; exports `src/data/generated/*.json` + golden results. *Check:* simulated stock RB19 within ±2% of real pole laps, speed trace overlaid on real data.
+- [ ] **11. Python lab setup + real data.** `lab/` with uv, ruff, pytest and a CI job. FastF1 pulls Verstappen's best 2023 qualifying lap in the RB19 at Monza, Monaco and Silverstone; track outlines become circuit files; those lap times and the ERS limits get sourced in `facts.md`. Check FastF1/F1 timing terms before committing derived data; add a size/schema guard for exported JSON. *Check:* `uv run --directory lab pytest` passes; a plot of the real Monza speed trace.
+- [ ] **12. Reference physics (Python).** NumPy/SciPy lap solver; aero, power and tyre parameters fitted to the real telemetry; exports `src/data/generated/*.json` + golden results. *Check:* simulated stock RB19 within ±2% of the real RB19 qualifying laps, speed trace overlaid on real data.
 - [ ] **13. Live stats (TypeScript).** Top speed, downforce/drag, balance, cornering g vs. stock, matching Python's golden results. **← first playable**
 - [ ] **14. Lap sim + telemetry.** TS port of the lap solver (golden tests ≤0.1% from Python); graphs with your car vs. the real RB19 lap.
 - [ ] **15. Watch it drive.** Car laps a 3D track from the speed trace.

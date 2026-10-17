@@ -32,7 +32,7 @@ Web app (Vite + React + TS + react-three-fiber) where users learn F1 engineering
 | Changed | Agents |
 |---|---|
 | `src/sim/**`, `lab/**`, `src/data/generated/**` | physics-verifier (also checks constants match `facts.md`) |
-| `src/data/**`, `docs/facts.md`, lessons, missions | f1-fact-checker |
+| `src/data/*.ts`, `docs/facts.md`, lessons, missions | f1-fact-checker |
 | committed `.glb` in `public/models/parts/` | security-checker |
 | `src/scene/**`, `src/parts/**` | visual-qa + code-optimizer |
 | `src/build/**`, `src/ui/**`, `src/screens/**` | visual-qa |

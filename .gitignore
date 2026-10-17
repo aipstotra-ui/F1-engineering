@@ -12,7 +12,13 @@ assets-raw/
 .idea
 .gstack/
 lab/.cache/
-lab/.venv/
+.venv/
+.ipynb_checkpoints/
+lab/**/*.parquet
+lab/**/*.pkl
+lab/**/*.ff1pkl
+lab/**/*.feather
+lab/**/*.sqlite
 __pycache__/
 *.pyc
 .pytest_cache/
