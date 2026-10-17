@@ -1,8 +1,8 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** 0. Workflow, docs and agents (branch `step-00-workflow`)
-- **Next action:** User reviews and merges the Step 0 PR, then Step 1 (scaffold app).
+- **Current step:** 1. Setup (branch `step-01-setup`, PR open)
+- **Next action:** User tries `npm run dev` and merges the Step 1 PR, then Step 2 (part catalog + seed `docs/facts.md`).
 - **Open questions:** none
 - **Blocked on:** nothing
 
@@ -12,7 +12,7 @@ Build a realistic Red Bull RB19 part by part, learn what each part does, tune it
 
 ## Phase A: Foundations
 - [x] **0. Workflow.** CLAUDE.md router, docs/, 7 agents, PR template, memory. *Check:* agents load and report.
-- [ ] **1. Setup.** Vite + React + TS + R3F, Vitest, lint, GitHub Actions. *Check:* page opens at localhost.
+- [x] **1. Setup.** Vite + React + TS + R3F, Vitest, lint, GitHub Actions. *Check:* page opens at localhost.
 - [ ] **2. Part catalog.** `src/data/parts.ts` with all Wave 1 parts, sections, build order, lessons; seed `docs/facts.md`. *Check:* page lists parts by section.
 
 ## Phase B: AI parts

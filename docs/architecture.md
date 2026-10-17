@@ -1,7 +1,7 @@
 # Architecture
 
 ## Stack
-Vite + React + TypeScript · three.js via @react-three/fiber, @react-three/drei, @react-three/postprocessing · Zustand · zod (validates untrusted input) · Recharts · Vitest · Playwright · @gltf-transform/cli. Hosting: GitHub Pages or Vercel.
+Vite + React + TypeScript · three.js via @react-three/fiber, @react-three/drei, @react-three/postprocessing · Zustand · zod (validates untrusted input) · Recharts · Vitest · oxlint · Playwright · @gltf-transform/cli. Hosting: GitHub Pages or Vercel.
 
 ## Folders
 ```

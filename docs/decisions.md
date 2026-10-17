@@ -17,3 +17,5 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-16: 7 lean project agents; checkers report-only; triggered by changed files.
 - 2026-10-16: Branch + PR per step; user reviews and merges.
 - 2026-10-16: Token efficiency: CLAUDE.md router + docs read on demand, nested CLAUDE.md, fact IDs, tiny memory.
+- 2026-10-17: Tooling: Vite 8, React 19, TypeScript 6 (strict), oxlint, Vitest; CI on Node 22. The 3D view is lazy-loaded behind an error boundary (WebGL fallback message).
+- 2026-10-17: npm install scripts stay blocked (only fsevents wants one; not needed).
