@@ -1,8 +1,9 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** 1. Setup (branch `step-01-setup`, PR open)
-- **Next action:** User tries `npm run dev` and merges the Step 1 PR, then Step 2 (part catalog + seed `docs/facts.md`).
+- **Current step:** 2. Part catalog (branch `step-02-part-catalog`, PR open)
+- **Next action:** User reviews lessons in the catalog panel and merges the Step 2 PR, then Step 3 (AI part test: turbo, brake caliper, sidepod).
+- **Note:** Step 2's visual check was skipped (interrupted); check the panel on the Vercel preview.
 - **Open questions:** none
 - **Blocked on:** nothing
 
@@ -13,7 +14,7 @@ Build a realistic Red Bull RB19 part by part, learn what each part does, tune it
 ## Phase A: Foundations
 - [x] **0. Workflow.** CLAUDE.md router, docs/, 7 agents, PR template, memory. *Check:* agents load and report.
 - [x] **1. Setup.** Vite + React + TS + R3F, Vitest, lint, GitHub Actions. *Check:* page opens at localhost.
-- [ ] **2. Part catalog.** `src/data/parts.ts` with all Wave 1 parts, sections, build order, lessons; seed `docs/facts.md`. *Check:* page lists parts by section.
+- [x] **2. Part catalog.** `src/data/parts.ts` with all Wave 1 parts, sections, build order, lessons; seed `docs/facts.md`. *Check:* page lists parts by section.
 
 ## Phase B: AI parts
 - [ ] **3. AI part test (go/no-go).** Turbo, brake caliper and sidepod on 2–3 free tools, compared side by side. *Check:* user judges "realistic enough".

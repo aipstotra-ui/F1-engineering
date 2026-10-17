@@ -19,3 +19,5 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-16: Token efficiency: CLAUDE.md router + docs read on demand, nested CLAUDE.md, fact IDs, tiny memory.
 - 2026-10-17: Tooling: Vite 8, React 19, TypeScript 6 (strict), oxlint, Vitest; CI on Node 22. The 3D view is lazy-loaded behind an error boundary (WebGL fallback message).
 - 2026-10-17: npm install scripts stay blocked (only fsevents wants one; not needed).
+- 2026-10-17: Repo made public (GitHub Actions minutes were blocked on the private repo). Vercel is connected to the repo; PR previews can be used for visual checks.
+- 2026-10-17: Sources: FIA 2023 Technical Regulations Issue 7 is the primary source; pole times and ERS energy limits are deferred to Step 12 (physics).
