@@ -2,7 +2,7 @@ import type { BufferGeometry } from 'three'
 
 /** Material names; src/scene/materials.ts turns each into a realistic or hologram material. */
 export type MaterialKind =
-  | 'paint' // matte dark navy bodywork
+  | 'paint' // dark navy bodywork (F-047)
   | 'paintRed'
   | 'paintYellow'
   | 'carbon' // glossy exposed carbon fibre

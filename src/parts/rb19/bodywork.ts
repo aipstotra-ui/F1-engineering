@@ -35,7 +35,7 @@ const ENGINE_COVER: LoftStation[] = [
   { x: -1.5, halfWidth: 0.11, top: 0.45, bottom: 0.25, topSquareness: 2.4, bottomSquareness: 2.6 },
   { x: -1.8, halfWidth: 0.065, top: 0.42, bottom: 0.28, topSquareness: 2.2, bottomSquareness: 2.4 },
 ]
-// Left sidepod (mirrored for the right). Styling: high undercut at the front, steep downward ramp behind.
+// Sidepod on the +z side (mirrored for the other side). Styling: high undercut at the front, steep downward ramp behind.
 const SIDEPOD: LoftStation[] = [
   { x: 0.66, centerZ: 0.6, halfWidth: 0.15, top: 0.6, bottom: 0.42, topSquareness: 4.5, bottomSquareness: 3 },
   { x: 0.5, centerZ: 0.59, halfWidth: 0.18, top: 0.615, bottom: 0.3, topSquareness: 4.5, bottomSquareness: 2.6 },
@@ -71,10 +71,9 @@ export function nose(): Piece[] {
   const body = [NOSE_TIP[0], ...NOSE]
   // Livery (F-047): the RB19's nose is yellow on top and navy underneath. The panel stops just before the
   // nose meets the chassis, so two painted surfaces never fight at the same spot.
-  const panel = [...body.slice(0, -1), { ...body[body.length - 1], x: 2.06, halfWidth: 0.19, top: 0.54, bottom: 0.18 }]
   return [
     { name: 'Nose', material: 'paint', geometry: loft(body) },
-    { name: 'Nose livery', material: 'paintYellow', geometry: loft(panel, { arc: [0.3, 0.7], inflate: 0.003 }) },
+    { name: 'Nose livery', material: 'paintYellow', geometry: loft(body, { range: [0, body.length - 1.25], arc: [0.3, 0.7], inflate: 0.003 }) },
   ]
 }
 
@@ -121,7 +120,7 @@ export function steeringWheel(): Piece[] {
 
 export function sidepods(): Piece[] {
   const inlet = roundedBox([0.01, 0.13, 0.22], [0.665, 0.51, 0.6], 0.03)
-  // The upper lip overhangs the letterbox inlet, as on the RB19.
+  // Styling: the upper lip overhangs the letterbox inlet.
   const lip = roundedBox([0.08, 0.012, 0.27], [0.69, 0.604, 0.6], 0.005)
   return [
     ...pair(loft(SIDEPOD)).map((geometry) => ({ name: 'Sidepod', material: 'paint' as const, geometry })),
@@ -147,8 +146,8 @@ export function engineCover(): Piece[] {
     { name: 'Engine cover', material: 'paint', geometry: loft(ENGINE_COVER) },
     { name: 'Airbox inlet', material: 'black', geometry: inlet },
     { name: 'Airbox lip', material: 'paintRed', geometry: lip },
-    // Livery (F-047): yellow airbox top. TV camera on top of the roll hoop.
-    { name: 'Airbox livery', material: 'paintYellow', geometry: loft(ENGINE_COVER.slice(0, 3), { arc: [0.3, 0.7], inflate: 0.003, along: 16 }) },
+    // Livery (F-047): yellow airbox top. Then a camera pod on top of the roll hoop (styling).
+    { name: 'Airbox livery', material: 'paintYellow', geometry: loft(ENGINE_COVER, { range: [0, 1.6], arc: [0.3, 0.7], inflate: 0.004, along: 24 }) },
     {
       name: 'Engine cover fin',
       material: 'paint',

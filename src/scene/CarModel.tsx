@@ -43,6 +43,8 @@ const CarPart = memo(function CarPart({ id, meshes }: PartMeshes) {
           geometry={m.geometry}
           material={getMaterial(m.material, mode, variant)}
           raycast={clickable ? DEFAULT_RAYCAST : NO_RAYCAST}
+          castShadow={!ghost}
+          receiveShadow
         />
       ))}
     </group>

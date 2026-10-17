@@ -26,23 +26,21 @@ function startingCamera(): [number, number, number] {
 // memo: it has no props, so switching view modes never re-bakes the lighting.
 const StudioLighting = memo(function StudioLighting() {
   return (
-    <Environment resolution={256}>
+    <Environment resolution={512}>
       {/* Dim grey studio walls, so reflections have something darker than the lights to show. */}
       <color attach="background" args={['#3a404b']} />
       {/* Big overhead softbox: the main light and the long highlight along the bodywork. */}
-      <Lightformer form="rect" intensity={5} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[10, 3, 1]} />
+      <Lightformer intensity={5} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[10, 3, 1]} />
       {/* Thin light strips on both sides: the crisp reflection lines seen on car photos. */}
-      {[-1.5, 0, 1.5].map((x) => (
-        <Lightformer key={x} form="rect" intensity={3.5} position={[x * 2, 2.2, 5]} scale={[0.35, 6, 1]} />
-      ))}
-      {[-1.5, 0, 1.5].map((x) => (
-        <Lightformer key={x} form="rect" intensity={3.5} position={[x * 2, 2.2, -5]} rotation-y={Math.PI} scale={[0.35, 6, 1]} />
-      ))}
+      {[-3, 0, 3].flatMap((x) => [
+        <Lightformer key={`front${x}`} intensity={3.5} position={[x, 2.2, 5]} scale={[0.35, 6, 1]} />,
+        <Lightformer key={`back${x}`} intensity={3.5} position={[x, 2.2, -5]} rotation-y={Math.PI} scale={[0.35, 6, 1]} />,
+      ])}
       {/* Warm key from the front, cool rim from behind. */}
-      <Lightformer form="rect" intensity={3} color="#ffe2c4" position={[7, 2, 0]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} />
-      <Lightformer form="rect" intensity={1.6} color="#b8d4ff" position={[-7, 2.5, 0]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} />
+      <Lightformer intensity={3} color="#ffe2c4" position={[7, 2, 0]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} />
+      <Lightformer intensity={1.6} color="#b8d4ff" position={[-7, 2.5, 0]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} />
       {/* Floor bounce. */}
-      <Lightformer form="rect" intensity={0.4} position={[0, -1, 0]} rotation-x={-Math.PI / 2} scale={[10, 10, 1]} />
+      <Lightformer intensity={0.4} position={[0, -1, 0]} rotation-x={-Math.PI / 2} scale={[10, 10, 1]} />
     </Environment>
   )
 })
@@ -59,9 +57,25 @@ function RealisticSet({ visible }: { visible: boolean }) {
     <>
       <StudioLighting />
       <group visible={visible}>
-        <directionalLight position={[4, 8, 5]} intensity={1.8} />
+        {/* Key light with real soft shadows: the halo on the cockpit, wings on the floor, car on the ground. */}
+        <directionalLight
+          position={[4, 8, 5]}
+          intensity={1.8}
+          castShadow
+          shadow-mapSize={[4096, 4096]}
+          shadow-bias={-0.0003}
+          shadow-normalBias={0.02}
+          shadow-radius={8}
+          shadow-blurSamples={16}
+          shadow-camera-left={-4}
+          shadow-camera-right={4}
+          shadow-camera-top={4}
+          shadow-camera-bottom={-4}
+          shadow-camera-near={1}
+          shadow-camera-far={20}
+        />
         <hemisphereLight args={['#dfe8ff', '#1d222b', 0.35]} />
-        <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
+        <mesh rotation-x={-Math.PI / 2} position-y={-0.001} receiveShadow>
           <circleGeometry args={[12, 64]} />
           <meshStandardMaterial color="#1d222b" roughness={0.8} />
         </mesh>
@@ -130,7 +144,7 @@ export default function Stage() {
   return (
     <CanvasErrorBoundary>
       {/* "demand": the scene only redraws when something changes, so an idle page costs no GPU. */}
-      <Canvas camera={camera} dpr={[1, 2]} frameloop="demand">
+      <Canvas camera={camera} dpr={[1, 2]} frameloop="demand" shadows="variance">
         {/* One background and fog for both modes, so switching can never leave the wrong one behind. */}
         <color attach="background" args={[viewMode === 'realistic' ? '#222a37' : '#050b18']} />
         <fog attach="fog" args={viewMode === 'realistic' ? ['#222a37', 12, 26] : ['#050b18', 30, 40]} />

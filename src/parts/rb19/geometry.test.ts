@@ -94,3 +94,32 @@ describe('other shapes', () => {
     expect(box.boundingBox!.max.z).toBeCloseTo(3.05, 3)
   })
 })
+
+describe('loft panels', () => {
+  const stations = [
+    { x: 1, halfWidth: 0.2, top: 0.5, bottom: 0.1 },
+    { x: 0, halfWidth: 0.3, top: 0.6, bottom: 0.1 },
+    { x: -1, halfWidth: 0.1, top: 0.4, bottom: 0.2 },
+  ]
+
+  it('covers only the requested arc and range, sitting just outside the body', () => {
+    const panel = loft(stations, { arc: [0.3, 0.7], range: [0, 1], inflate: 0.005, along: 20, radial: 16 })
+    const box = panel.boundingBox!
+    expect(box.max.x).toBeCloseTo(1, 3)
+    expect(box.min.x).toBeCloseTo(0, 3) // range stops at the second station
+    expect(box.min.y).toBeGreaterThan(0.3) // top arc only, nowhere near the bottom
+    // 5 mm above the 0.6 m top (plus the smooth curve's tiny overshoot near a station).
+    expect(box.max.y).toBeGreaterThan(0.604)
+    expect(box.max.y).toBeLessThan(0.61)
+    expect(panel.getIndex()!.count).toBe(19 * 16 * 6) // no end caps
+  })
+
+  it('gives texture coordinates in metres', () => {
+    const body = loft(stations, { along: 40 })
+    const uv = body.getAttribute('uv')
+    let maxV = 0
+    for (let i = 0; i < uv.count; i++) maxV = Math.max(maxV, uv.getY(i))
+    expect(maxV).toBeGreaterThan(1.9) // at least the 2 m length of the body
+    expect(maxV).toBeLessThan(2.2)
+  })
+})

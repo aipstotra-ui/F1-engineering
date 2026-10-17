@@ -16,7 +16,7 @@ const HALF_V = ((V_ANGLE_DEG / 2) * Math.PI) / 180
 /** Turbocharger shaft: on the centre line (z = 0, inside the 25 mm limit), behind the engine. Styling. */
 export const TURBO_Y = 0.42
 
-/** Point along one cylinder bank, `distance` out from the crankshaft. side = 1 left, −1 right. */
+/** Point along one cylinder bank, `distance` out from the crankshaft. side = 1 for the +z bank, −1 for the −z bank. */
 const bankPoint = (distance: number, side: 1 | -1): [number, number] => [
   CRANK_Y + distance * Math.cos(HALF_V),
   side * distance * Math.sin(HALF_V),

@@ -21,7 +21,7 @@ import type { MaterialKind, Piece } from './types.ts'
 
 interface Corner {
   label: string
-  centre: Vec3 // wheel centre (left side; right side mirrors z)
+  centre: Vec3 // wheel centre on the +z side; the other side mirrors z
   width: number
   disc: number
 }
@@ -150,7 +150,7 @@ export function wheelRims(): Piece[] {
       return [
         { name: `${corner.label} rim`, material: 'rimMetal', geometry: turned([[RIM_RADIUS, -h + 0.012], [RIM_RADIUS, h - 0.012]], centre, 'z') },
         // Wheel cover on the outer face (F-046).
-        { name: 'Wheel cover', material: 'rimMetal', geometry: turned([[0.001, out * (h - 0.01)], [RIM_RADIUS, out * (h - 0.01)]], centre, 'z') },
+        { name: 'Wheel cover', material: 'carbon', geometry: turned([[0.001, out * (h - 0.01)], [RIM_RADIUS, out * (h - 0.01)]], centre, 'z') },
         { name: 'Rim lip', material: 'paintRed', geometry: turned([[RIM_RADIUS - 0.014, out * (h - 0.008)], [RIM_RADIUS, out * (h - 0.008)]], centre, 'z', 64) },
         {
           name: 'Wheel nut',
@@ -205,12 +205,12 @@ export function brakeDucts(): Piece[] {
       return [
         { name: `${corner.label} brake drum`, material: 'carbon', geometry: turned([[0.2, inner], [0.2, drumEnd]], [x, y, z], 'z') },
         { name: `${corner.label} duct inlet`, material: 'carbon', geometry: roundedBox([0.14, 0.1, 0.07], [x + 0.17, y - 0.06, z + inner], 0.02) },
-        // Small winglets on top of the rear brake ducts.
+        // Small winglets on top of the rear brake ducts (styling).
         ...(corner.label === 'Rear'
           ? [0, 0.04].map((dy) => ({
               name: 'Rear duct winglet',
               material: 'carbon' as const,
-              geometry: roundedBox([0.16, 0.006, 0.1], [x + 0.08, 0.56 + dy, z + inner - out * 0.04], 0.003, [0, 0, 0.12]),
+              geometry: roundedBox([0.16, 0.006, 0.1], [x + 0.08, y + 0.2 + dy, z + inner - out * 0.04], 0.003, [0, 0, 0.12]),
             }))
           : []),
       ]

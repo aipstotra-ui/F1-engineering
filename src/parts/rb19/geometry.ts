@@ -68,11 +68,17 @@ export interface LoftStation {
 export interface LoftOptions {
   /**
    * Only part of the way round, for painted panels laid over a body: fractions of a full turn,
-   * 0 = bottom centre, 0.25 = left side (+z), 0.5 = top, 0.75 = right side. No end caps.
+   * 0 = bottom centre, 0.25 = the +z side, 0.5 = top, 0.75 = the −z side. No end caps.
    */
   arc?: [number, number]
   /** Grow every section by this much (metres) so a panel sits just above the body under it. */
   inflate?: number
+  /**
+   * Only part of the way along, as station positions (0 = first station, 1 = second, 1.5 = halfway
+   * to the third …). A panel built from the same stations with a range follows exactly the same curve
+   * as the body under it, so the two never cross.
+   */
+  range?: [number, number]
   /** Points around each section. */
   radial?: number
   /** Sections sampled along the body (smoothly interpolated between the given stations). */
@@ -83,7 +89,7 @@ export interface LoftOptions {
 
 /** Builds a smooth closed body through the given cross-sections (ordered front to back). */
 export function loft(stations: LoftStation[], options: LoftOptions = {}): BufferGeometry {
-  const { radial = 48, along = 48, arc, inflate = 0 } = options
+  const { radial = 64, along = 64, arc, inflate = 0 } = options
   const capStart = arc ? false : (options.capStart ?? true)
   const capEnd = arc ? false : (options.capEnd ?? true)
   const [turnFrom, turnTo] = arc ?? [0, 1]
@@ -102,11 +108,12 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
   const uvs: number[] = []
   const indices: number[] = []
   const ringSize = radial + 1 // repeat the first point so the texture wraps cleanly
+  const [tFrom, tTo] = options.range ?? [0, stations.length - 1]
   let length = 0
   let previous: [number, number] | null = null
 
   for (let a = 0; a < along; a++) {
-    const t = (a / (along - 1)) * (stations.length - 1)
+    const t = tFrom + (a / (along - 1)) * (tTo - tFrom)
     const x = catmull(xs, t)
     const hw = Math.max(catmull(halfWidths, t), 1e-4) + inflate
     const top = catmull(tops, t) + inflate
@@ -117,6 +124,10 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
     if (previous) length += Math.hypot(x - previous[0], mid - previous[1])
     previous = [x, mid]
 
+    // Texture coordinates are in real metres (distance round the section, distance along the body),
+    // so textures such as the carbon weave come out at their true size on every part.
+    let around = 0
+    let last: [number, number] | null = null
     for (let r = 0; r < ringSize; r++) {
       // Start at the bottom centre so the texture seam is hidden underneath.
       const turn = turnFrom + (turnTo - turnFrom) * (r / radial)
@@ -124,8 +135,12 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
       const c = Math.cos(theta)
       const s = Math.sin(theta)
       const e = 2 / (s >= 0 ? catmull(topSq, t) : catmull(bottomSq, t))
-      positions.push(x, mid + hh * signedPow(s, e), cz + hw * signedPow(c, e))
-      uvs.push((r / radial) * 4, length * 4) // ×4: repeat the carbon weave so it isn't stretched
+      const py = mid + hh * signedPow(s, e)
+      const pz = cz + hw * signedPow(c, e)
+      if (last) around += Math.hypot(py - last[0], pz - last[1])
+      last = [py, pz]
+      positions.push(x, py, pz)
+      uvs.push(around, length)
     }
   }
 
@@ -218,7 +233,7 @@ export interface WingElementSpec {
 
 /** A wing element: the aerofoil profile swept along the span, with closed ends. */
 export function wingElement(spec: WingElementSpec): BufferGeometry {
-  const { naca, span, stations = 24, inverted = true } = spec
+  const { naca, span, stations = 32, inverted = true } = spec
   const profile = nacaProfile(...naca)
   const n = profile.length
   const half = (n + 1) / 2 // upper and lower surfaces share the leading-edge point
@@ -238,11 +253,13 @@ export function wingElement(spec: WingElementSpec): BufferGeometry {
     const dy = Math.sin(angle)
     const nx = Math.sin(angle)
     const ny = Math.cos(angle)
+    let around = 0
     for (let i = 0; i < n; i++) {
       const u = profile[i].x
       const v = inverted ? -profile[i].y : profile[i].y
+      if (i > 0) around += chord * Math.hypot(u - profile[i - 1].x, profile[i].y - profile[i - 1].y)
       positions.push(lx + chord * (u * dx + v * nx), ly + chord * (u * dy + v * ny), z)
-      uvs.push(i / (n - 1), s * 4)
+      uvs.push(around, z) // metres, like loft()
     }
   }
 
@@ -279,11 +296,19 @@ export function wingElement(spec: WingElementSpec): BufferGeometry {
 // ---------- rods, tubes, turned parts, plates and boxes ----------
 
 /** A straight rod between two points. `flatten` < 1 squashes it into an aerofoil-like fairing. */
-export function strut(a: Vec3, b: Vec3, radius: number, flatten = 1, segments = 12): BufferGeometry {
+/** Stretches a geometry's 0–1 texture coordinates to real metres. */
+function uvToMetres(geometry: BufferGeometry, uMetres: number, vMetres: number) {
+  const uv = geometry.getAttribute('uv')
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * uMetres, uv.getY(i) * vMetres)
+  uv.needsUpdate = true
+}
+
+export function strut(a: Vec3, b: Vec3, radius: number, flatten = 1, segments = 20): BufferGeometry {
   const start = new Vector3(...a)
   const end = new Vector3(...b)
   const direction = end.clone().sub(start)
   const geometry = new CylinderGeometry(radius, radius, direction.length(), segments)
+  uvToMetres(geometry, 2 * Math.PI * radius, direction.length())
   geometry.scale(1, 1, flatten)
   const rotation = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), direction.clone().normalize())
   geometry.applyMatrix4(new Matrix4().compose(start.add(end).multiplyScalar(0.5), rotation, new Vector3(1, 1, 1)))
@@ -291,24 +316,31 @@ export function strut(a: Vec3, b: Vec3, radius: number, flatten = 1, segments = 
 }
 
 /** A tube following a smooth curve through the points (exhausts, halo, cockpit rim). */
-export function tubeThrough(points: Vec3[], radius: number, closed = false, segments = 64): BufferGeometry {
+export function tubeThrough(points: Vec3[], radius: number, closed = false, segments = 96): BufferGeometry {
   const curve = new CatmullRomCurve3(
     points.map((p) => new Vector3(...p)),
     closed,
     'centripetal',
   )
-  return finish(new TubeGeometry(curve, segments, radius, 12, closed))
+  const geometry = new TubeGeometry(curve, segments, radius, 16, closed)
+  uvToMetres(geometry, curve.getLength(), 2 * Math.PI * radius)
+  return finish(geometry)
 }
 
 /**
  * A part turned on a lathe (wheels, discs, turbo housings). `profile` is a list of
  * (radius, position along the axis) pairs; the result spins around `axis` through `centre`.
  */
-export function turned(profile: [number, number][], centre: Vec3, axis: 'x' | 'z', segments = 48): BufferGeometry {
+export function turned(profile: [number, number][], centre: Vec3, axis: 'x' | 'z', segments = 96): BufferGeometry {
   const geometry = new LatheGeometry(
     profile.map(([r, h]) => new Vector2(Math.max(r, 1e-4), h)),
     segments,
   )
+  let profileLength = 0
+  for (let i = 1; i < profile.length; i++) {
+    profileLength += Math.hypot(profile[i][0] - profile[i - 1][0], profile[i][1] - profile[i - 1][1])
+  }
+  uvToMetres(geometry, 2 * Math.PI * Math.max(...profile.map(([r]) => r)), profileLength)
   // LatheGeometry spins around +y; turn that to the requested axis.
   if (axis === 'z') geometry.rotateX(Math.PI / 2)
   else geometry.rotateZ(-Math.PI / 2)
