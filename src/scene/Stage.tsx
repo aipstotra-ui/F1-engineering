@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei'
 import { PARTS } from '../data/parts.ts'
@@ -22,7 +22,8 @@ function startingCamera(): [number, number, number] {
 }
 
 // Soft studio light panels: realistic reflections without downloading an HDRI.
-function StudioLighting() {
+// memo: it has no props, so switching view modes never re-bakes the lighting.
+const StudioLighting = memo(function StudioLighting() {
   return (
     <Environment resolution={256}>
       <Lightformer intensity={4} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[12, 4, 1]} />
@@ -32,15 +33,18 @@ function StudioLighting() {
       <Lightformer intensity={1.2} color="#9ec9ff" position={[0, 1, -6]} rotation-y={Math.PI} scale={[8, 2, 1]} />
     </Environment>
   )
-}
+})
+
+/** Baked once: the car doesn't move, so the soft shadow under it never needs redrawing. */
+const BakedShadow = memo(function BakedShadow() {
+  return <ContactShadows position-y={0.001} opacity={0.75} scale={9} blur={2.4} far={1.2} resolution={1024} frames={1} />
+})
 
 // Lighting and the baked shadow stay mounted in both modes (hidden in hologram mode):
 // unmounting them would rebuild them on every switch and leak the shadow's GPU memory.
 function RealisticSet({ visible }: { visible: boolean }) {
   return (
     <>
-      {visible && <color attach="background" args={['#1a212c']} />}
-      {visible && <fog attach="fog" args={['#1a212c', 10, 22]} />}
       <StudioLighting />
       <group visible={visible}>
         <directionalLight position={[4, 8, 5]} intensity={1.4} />
@@ -48,23 +52,23 @@ function RealisticSet({ visible }: { visible: boolean }) {
           <circleGeometry args={[12, 64]} />
           <meshStandardMaterial color="#232a35" roughness={0.85} />
         </mesh>
-        <ContactShadows position-y={0.001} opacity={0.75} scale={9} blur={2.4} far={1.2} resolution={1024} frames={1} />
+        <BakedShadow />
       </group>
     </>
   )
 }
 
 // The Spider-Man suit-lab look: dark navy, glowing grid and pedestal ring.
-function HologramSet() {
+function HologramSet({ visible }: { visible: boolean }) {
   return (
     <>
-      <color attach="background" args={['#050b18']} />
-      <fog attach="fog" args={['#050b18', 30, 40]} />
-      <gridHelper args={[24, 48, '#1f6bff', '#0d2244']} />
-      <mesh rotation-x={-Math.PI / 2} position-y={0.002}>
-        <ringGeometry args={[3.3, 3.36, 128]} />
-        <meshBasicMaterial color="#3ad8ff" />
-      </mesh>
+      <group visible={visible}>
+        <gridHelper args={[24, 48, '#1f6bff', '#0d2244']} />
+        <mesh rotation-x={-Math.PI / 2} position-y={0.002}>
+          <ringGeometry args={[3.3, 3.36, 128]} />
+          <meshBasicMaterial color="#3ad8ff" />
+        </mesh>
+      </group>
     </>
   )
 }
@@ -114,8 +118,11 @@ export default function Stage() {
     <CanvasErrorBoundary>
       {/* "demand": the scene only redraws when something changes, so an idle page costs no GPU. */}
       <Canvas camera={camera} dpr={[1, 2]} frameloop="demand">
+        {/* One background and fog for both modes, so switching can never leave the wrong one behind. */}
+        <color attach="background" args={[viewMode === 'realistic' ? '#1a212c' : '#050b18']} />
+        <fog attach="fog" args={viewMode === 'realistic' ? ['#1a212c', 10, 22] : ['#050b18', 30, 40]} />
         <RealisticSet visible={viewMode === 'realistic'} />
-        {viewMode === 'hologram' && <HologramSet />}
+        <HologramSet visible={viewMode === 'hologram'} />
         <CarModel />
         <OrbitControls target={CAR_CENTRE} enablePan={false} minDistance={2.5} maxDistance={12} maxPolarAngle={Math.PI / 2 - 0.05} />
       </Canvas>
