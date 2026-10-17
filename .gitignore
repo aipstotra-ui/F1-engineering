@@ -1,5 +1,12 @@
 node_modules/
 dist/
+dist-ssr/
+coverage/
 assets-raw/
-.DS_Store
+*.local
+*.log
 .env*
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea

@@ -1,0 +1,62 @@
+/* Design tokens, see docs/design.md */
+:root {
+  --bg-navy: #050b18;
+  --holo-cyan: #3ad8ff;
+  --holo-blue: #1f6bff;
+  --panel-glass: rgba(20, 40, 80, 0.35);
+  --text: #e6f1ff;
+  --text-dim: #8aa4c8;
+  --accent-red: #e10600;
+  --accent-yellow: #ffcc00;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-navy);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+}
+
+.app-header {
+  padding: 16px 24px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--holo-cyan);
+}
+
+.app-header p {
+  margin: 4px 0 0;
+  color: var(--text-dim);
+}
+
+.app-stage {
+  min-height: 0;
+}
+
+.app-footer {
+  padding: 10px 24px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
