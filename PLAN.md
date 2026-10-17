@@ -1,11 +1,11 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** Plan update: Python lab added (branch `plan-python-lab`, PR open)
-- **Next action:** User merges the plan PR, then Step 3 (AI part test: turbo, brake caliper, sidepod).
-- **Note:** Step 2's visual check was skipped (interrupted); check the catalog panel on the Vercel preview.
+- **Current step:** 3. AI part test (branch `step-03-ai-part-test`)
+- **Done so far:** reference pictures (FLUX), `scripts/check-glb.mjs` safety checker, `scripts/clean-part.mjs`, "AI part test" screen (`#part-test`).
+- **Next action:** User logs in to Hugging Face (`uvx --from huggingface_hub hf auth login`), then generate turbo/caliper/sidepod on Hunyuan3D-2 and TRELLIS.2, check, clean, compare.
 - **Open questions:** none
-- **Blocked on:** nothing
+- **Blocked on:** Hugging Face GPU quota (anonymous allowance used up)
 
 ---
 

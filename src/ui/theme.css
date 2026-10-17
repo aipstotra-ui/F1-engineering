@@ -185,3 +185,120 @@ body {
     border-top: 1px solid rgba(58, 216, 255, 0.25);
   }
 }
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.app-nav a {
+  padding: 6px 12px;
+  border: 1px solid rgba(58, 216, 255, 0.3);
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.app-nav a[aria-current='page'] {
+  background: rgba(58, 216, 255, 0.15);
+  border-color: var(--holo-cyan);
+}
+
+.app-main-single {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.part-test {
+  display: grid;
+  gap: 16px;
+  padding: 0 24px 16px;
+}
+
+.part-test-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.part-test-tabs button {
+  padding: 6px 14px;
+  background: var(--panel-glass);
+  border: 1px solid rgba(58, 216, 255, 0.25);
+  border-radius: 6px;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.part-test-tabs button.active {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+.part-test-body {
+  display: grid;
+  grid-template-columns: minmax(200px, 320px) 1fr;
+  gap: 16px;
+  min-height: 420px;
+}
+
+.part-test-reference {
+  margin: 0;
+}
+
+.part-test-reference img {
+  width: 100%;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.part-test-reference figcaption {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.part-test-viewer {
+  position: relative;
+  min-height: 420px;
+  border: 1px solid rgba(58, 216, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.candidate-label {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(5, 11, 24, 0.8);
+  color: var(--text);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.part-test-table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.part-test-table th,
+.part-test-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(58, 216, 255, 0.15);
+  text-align: left;
+}
+
+@media (max-width: 800px) {
+  .part-test-body {
+    grid-template-columns: 1fr;
+  }
+}
