@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei'
 import { PARTS } from '../data/parts.ts'
@@ -15,14 +15,16 @@ const CAR_CENTRE: [number, number, number] = [0.35, 0.35, 0]
 function startingCamera(): [number, number, number] {
   if (!import.meta.env.DEV) return DEFAULT_CAMERA
   const parts = (new URLSearchParams(window.location.search).get('cam') ?? '').split(',').map(Number)
-  if (parts.length !== 3 || !parts.every((n) => Number.isFinite(n) && Math.abs(n) < 50)) return DEFAULT_CAMERA
+  const raw = (new URLSearchParams(window.location.search).get('cam') ?? '').split(',')
+  if (raw.length !== 3 || raw.some((part) => part.trim() === '')) return DEFAULT_CAMERA
+  if (!parts.every((n) => Number.isFinite(n) && Math.abs(n) < 50)) return DEFAULT_CAMERA
   return [parts[0], parts[1], parts[2]]
 }
 
 // Soft studio light panels: realistic reflections without downloading an HDRI.
 function StudioLighting() {
   return (
-    <Environment resolution={512}>
+    <Environment resolution={256}>
       <Lightformer intensity={4} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[12, 4, 1]} />
       <Lightformer intensity={2} position={[-6, 2, 0]} rotation-y={Math.PI / 2} scale={[10, 2, 1]} />
       <Lightformer intensity={2} position={[6, 2, 0]} rotation-y={-Math.PI / 2} scale={[10, 2, 1]} />
@@ -32,18 +34,22 @@ function StudioLighting() {
   )
 }
 
-function RealisticSet() {
+// Lighting and the baked shadow stay mounted in both modes (hidden in hologram mode):
+// unmounting them would rebuild them on every switch and leak the shadow's GPU memory.
+function RealisticSet({ visible }: { visible: boolean }) {
   return (
     <>
-      <color attach="background" args={['#1a212c']} />
-      <fog attach="fog" args={['#1a212c', 10, 22]} />
+      {visible && <color attach="background" args={['#1a212c']} />}
+      {visible && <fog attach="fog" args={['#1a212c', 10, 22]} />}
       <StudioLighting />
-      <directionalLight position={[4, 8, 5]} intensity={1.4} />
-      <mesh rotation-x={-Math.PI / 2} position-y={-0.001} receiveShadow>
-        <circleGeometry args={[12, 64]} />
-        <meshStandardMaterial color="#232a35" roughness={0.85} />
-      </mesh>
-      <ContactShadows position-y={0.001} opacity={0.75} scale={9} blur={2.4} far={1.2} resolution={1024} frames={1} />
+      <group visible={visible}>
+        <directionalLight position={[4, 8, 5]} intensity={1.4} />
+        <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
+          <circleGeometry args={[12, 64]} />
+          <meshStandardMaterial color="#232a35" roughness={0.85} />
+        </mesh>
+        <ContactShadows position-y={0.001} opacity={0.75} scale={9} blur={2.4} far={1.2} resolution={1024} frames={1} />
+      </group>
     </>
   )
 }
@@ -53,6 +59,7 @@ function HologramSet() {
   return (
     <>
       <color attach="background" args={['#050b18']} />
+      <fog attach="fog" args={['#050b18', 30, 40]} />
       <gridHelper args={[24, 48, '#1f6bff', '#0d2244']} />
       <mesh rotation-x={-Math.PI / 2} position-y={0.002}>
         <ringGeometry args={[3.3, 3.36, 128]} />
@@ -101,11 +108,14 @@ function ViewControls() {
 
 export default function Stage() {
   const viewMode = useCarStore((s) => s.viewMode)
+  const [camera] = useState(() => ({ position: startingCamera(), fov: 38 }))
 
   return (
     <CanvasErrorBoundary>
-      <Canvas camera={{ position: startingCamera(), fov: 38 }} dpr={[1, 2]}>
-        {viewMode === 'realistic' ? <RealisticSet /> : <HologramSet />}
+      {/* "demand": the scene only redraws when something changes, so an idle page costs no GPU. */}
+      <Canvas camera={camera} dpr={[1, 2]} frameloop="demand">
+        <RealisticSet visible={viewMode === 'realistic'} />
+        {viewMode === 'hologram' && <HologramSet />}
         <CarModel />
         <OrbitControls target={CAR_CENTRE} enablePan={false} minDistance={2.5} maxDistance={12} maxPolarAngle={Math.PI / 2 - 0.05} />
       </Canvas>

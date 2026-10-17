@@ -12,8 +12,7 @@ import {
   type Material,
 } from 'three'
 import type { MaterialKind } from '../parts/rb19/index.ts'
-
-export type ViewMode = 'realistic' | 'hologram'
+import type { ViewMode } from '../state/carStore.ts'
 export type Variant = 'normal' | 'highlight' | 'ghost'
 
 /** RB19-style colours without logos (docs/design.md). */
@@ -77,7 +76,7 @@ function realistic(kind: MaterialKind): MeshPhysicalMaterial {
       })
     }
     case 'rubber':
-      return new MeshPhysicalMaterial({ ...base, color: '#141414', roughness: 0.92, metalness: 0 })
+      return new MeshPhysicalMaterial({ ...base, color: '#1e1e1e', roughness: 0.82, metalness: 0, sheen: 0.4, sheenColor: '#5a5a5a' })
     case 'tyreStripe':
       return new MeshPhysicalMaterial({ ...base, color: YELLOW, roughness: 0.7 })
     case 'rimMetal':
@@ -123,11 +122,14 @@ function hologram(color: string, strength: number): ShaderMaterial {
       void main() {
         float rim = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.0);
         gl_FragColor = vec4(color * (0.12 + 1.3 * rim) * strength, (0.08 + 0.8 * rim) * strength);
+        #include <colorspace_fragment>
       }`,
     transparent: true,
     depthWrite: false,
     blending: AdditiveBlending,
     side: DoubleSide,
+    // Additive glow looks the same in any order, so one pass is enough (half the GPU work).
+    forceSinglePass: true,
   })
 }
 
@@ -135,7 +137,8 @@ const cache = new Map<string, Material>()
 
 /** The shared material for a part's piece in the current view. */
 export function getMaterial(kind: MaterialKind, mode: ViewMode, variant: Variant): Material {
-  const key = `${kind}|${mode}|${variant}`
+  // Every part looks the same in hologram mode, so those materials are shared across kinds.
+  const key = mode === 'hologram' ? `hologram|${variant}` : `${kind}|${mode}|${variant}`
   let material = cache.get(key)
   if (material) return material
 

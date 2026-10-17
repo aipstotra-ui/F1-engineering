@@ -3,7 +3,7 @@ import type { BufferGeometry } from 'three'
 import { loft, mirrorZ, nacaProfile, roundedBox, strut, topPlate, turned, wingElement } from './geometry.ts'
 
 /** Volume enclosed by a closed mesh; positive when every face points outwards. */
-export function signedVolume(geometry: BufferGeometry): number {
+function signedVolume(geometry: BufferGeometry): number {
   const position = geometry.getAttribute('position')
   const index = geometry.getIndex()
   const count = index ? index.count : position.count

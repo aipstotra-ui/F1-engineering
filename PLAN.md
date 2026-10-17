@@ -20,7 +20,7 @@ Build a realistic Red Bull RB19 part by part, learn what each part does, tune it
 
 ## Phase B: AI parts
 - [ ] **3. AI part test (go/no-go).** Turbo, brake caliper and sidepod on 2–3 free tools, compared side by side. *Check:* user judges "realistic enough".
-- [x] **3b. Code-built car (substep).** The whole RB19, exterior and internals, built from code: lofted bodywork, NACA aerofoil wings, lathe-turned wheels and engine parts. FIA-sized (tests check the regulation boxes), realistic materials + hologram toggle, X-ray to see internals, click a part to read its lesson. *Check:* compare with AI parts and decide which route each part takes.
+- [x] **3b. Code-built car (substep).** The whole RB19, exterior and internals, built from code: lofted bodywork, NACA aerofoil wings, lathe-turned wheels and engine parts. FIA-sized (tests check every wing vertex against the real FIA reference volumes), realistic materials + hologram toggle, X-ray to see internals, click a part to read its lesson. *Check:* compare with AI parts and decide which route each part takes.
 - [ ] **4. Part production.** Work through the AI parts list in `docs/parts-pipeline.md` (runs alongside C–E).
 
 ## Phase C: Realistic car on screen

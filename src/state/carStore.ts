@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import type { ViewMode } from '../scene/materials.ts'
+
+export type ViewMode = 'realistic' | 'hologram'
 
 // Shared view state: how the car is drawn and which part is picked.
 // The 3D view and the part catalog both read and change it.

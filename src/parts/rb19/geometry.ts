@@ -15,11 +15,15 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import type { Vec3 } from './frame.ts'
 
 // ---------- small helpers ----------
 
-/** Catmull-Rom interpolation through `values` at fractional index t (clamped at the ends). */
+/**
+ * Catmull-Rom interpolation through `values` at fractional index t (clamped at the ends):
+ * a smooth curve that passes exactly through every given value (standard cubic formula).
+ */
 function catmull(values: number[], t: number): number {
   const n = values.length
   if (n === 1) return values[0]
@@ -110,7 +114,7 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
       const s = Math.sin(theta)
       const e = 2 / (s >= 0 ? catmull(topSq, t) : catmull(bottomSq, t))
       positions.push(x, mid + hh * signedPow(s, e), cz + hw * signedPow(c, e))
-      uvs.push((r / radial) * 4, length * 4)
+      uvs.push((r / radial) * 4, length * 4) // ×4: repeat the carbon weave so it isn't stretched
     }
   }
 
@@ -298,7 +302,11 @@ export function turned(profile: [number, number][], centre: Vec3, axis: 'x' | 'z
   if (axis === 'z') geometry.rotateX(Math.PI / 2)
   else geometry.rotateZ(-Math.PI / 2)
   geometry.translate(...centre)
-  return finish(geometry)
+  // Keep sharp edges sharp (disc faces, motor ends) instead of smoothing across them.
+  const creased = toCreasedNormals(geometry, 0.7)
+  geometry.dispose()
+  creased.computeBoundingBox()
+  return creased
 }
 
 /** A flat plate cut to a 2D outline in the side view (x, y), `thickness` thick, centred on z. */
@@ -319,7 +327,7 @@ export function topPlate(outline: [number, number][], y: number, thickness: numb
   return finish(geometry)
 }
 
-/** A box with softly rounded edges, centred at `centre`, optionally rotated (radians, XYZ order). */
+/** A box with softly rounded edges, centred at `centre`, optionally rotated (radians; applied about X, then Y, then Z). */
 export function roundedBox(size: Vec3, centre: Vec3, radius = 0.01, rotation: Vec3 = [0, 0, 0]): BufferGeometry {
   const [w, h, d] = size
   const r = Math.min(radius, w / 2 - 1e-4, h / 2 - 1e-4)
@@ -338,7 +346,9 @@ export function roundedBox(size: Vec3, centre: Vec3, radius = 0.01, rotation: Ve
     depth: Math.max(d - 2 * bevel, 1e-4),
     bevelEnabled: bevel > 0,
     bevelThickness: bevel,
-    bevelSize: 0,
+    // Bevel inwards from the outline so the box keeps its exact size but gets rounded front/back edges.
+    bevelSize: bevel,
+    bevelOffset: -bevel,
     bevelSegments: 2,
     curveSegments: 4,
   })

@@ -1,6 +1,7 @@
 // Power unit, cooling, gearbox and rear crash structure (the "internals", seen in X-ray mode).
 // Regulated: 90° V6 with 80 mm bore and the crankshaft at Z = 90 mm (F-004, F-005, F-044);
-// turbo shaft on the centre line (F-045). Everything else is a styling choice.
+// turbo shaft within 25 mm of the centre line (F-045; placing it exactly on the line is styling).
+// Everything else is a styling choice.
 import { CRANK_Z_MM, REFERENCE_PLANE_HEIGHT, V_ANGLE_DEG, type Vec3 } from './frame.ts'
 import { loft, pair, roundedBox, strut, tubeThrough, turned } from './geometry.ts'
 import type { Piece } from './types.ts'
@@ -12,7 +13,7 @@ const ENGINE_REAR = -0.58
 const ENGINE_MID = (ENGINE_FRONT + ENGINE_REAR) / 2
 const ENGINE_LENGTH = ENGINE_FRONT - ENGINE_REAR
 const HALF_V = ((V_ANGLE_DEG / 2) * Math.PI) / 180
-/** Turbocharger shaft: on the centre line (z = 0), behind the engine. */
+/** Turbocharger shaft: on the centre line (z = 0, inside the 25 mm limit), behind the engine. Styling. */
 export const TURBO_Y = 0.42
 
 /** Point along one cylinder bank, `distance` out from the crankshaft. side = 1 left, −1 right. */

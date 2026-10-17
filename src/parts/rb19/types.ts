@@ -9,7 +9,7 @@ export type MaterialKind =
   | 'carbonMatte'
   | 'rubber'
   | 'tyreStripe'
-  | 'rimMetal' // magnesium wheel rim
+  | 'rimMetal' // magnesium alloy wheel rim (F-020)
   | 'titanium'
   | 'aluminium'
   | 'darkMetal'

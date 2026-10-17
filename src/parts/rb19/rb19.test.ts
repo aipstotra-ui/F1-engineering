@@ -7,11 +7,9 @@ import {
   DRS_Y_MAX,
   FRONT_AXLE_X,
   FRONT_TYRE_WIDTH,
-  FRONT_WING_BOX,
   MAX_FRONT_WING_ELEMENTS,
   REAR_AXLE_X,
   REAR_TYRE_WIDTH,
-  REAR_WING_BOX,
   REFERENCE_PLANE_HEIGHT,
   STROKE,
   TURBO_SHAFT_Y_MAX_MM,
@@ -19,10 +17,31 @@ import {
   fromFront,
   fromRear,
 } from './frame.ts'
-import { PART_BUILDERS, mergeByMaterial, type Piece } from './index.ts'
+import { OUTER_SHELL, PART_BUILDERS, mergeByMaterial, type Piece } from './index.ts'
 import { CRANK_Y } from './powertrain.ts'
+import { insideFrontWingVolume, insideRearWingProfiles } from './regulations.ts'
 
-const built = new Map(Object.entries(PART_BUILDERS).map(([id, build]) => [id, build()]))
+/** Car-frame vertex (m) → FIA coordinates (mm) measured from the front or rear axle. */
+const toFia = (x: number, y: number, z: number, axleX: number) => ({
+  along: (axleX - x) * 1000,
+  side: z * 1000,
+  up: (y - REFERENCE_PLANE_HEIGHT) * 1000,
+})
+
+/** Every vertex of the pieces that fails `inside`, as readable strings (empty = all inside). */
+function outside(list: Piece[], axleX: number, inside: (along: number, side: number, up: number) => boolean): string[] {
+  const misses: string[] = []
+  for (const piece of list) {
+    const position = piece.geometry.getAttribute('position')
+    for (let i = 0; i < position.count; i++) {
+      const p = toFia(position.getX(i), position.getY(i), position.getZ(i), axleX)
+      if (!inside(p.along, p.side, p.up)) misses.push(`${piece.name} @ ${p.along.toFixed(0)}, ${p.side.toFixed(0)}, ${p.up.toFixed(0)}`)
+    }
+  }
+  return misses
+}
+
+const built = new Map(Object.entries(PART_BUILDERS).map(([id, build]) => [id, build?.() ?? []]))
 const pieces = (id: string) => built.get(id) ?? []
 const named = (id: string, prefix: string) => pieces(id).filter((p) => p.name.startsWith(prefix))
 
@@ -41,6 +60,11 @@ describe('every catalog part is built in code', () => {
   it.each(PARTS.map((p) => p.id))('%s has a builder with at least one piece', (id) => {
     expect(PART_BUILDERS[id], id).toBeDefined()
     expect(pieces(id).length).toBeGreaterThan(0)
+  })
+
+  it('only marks real catalog parts as X-ray outer shell', () => {
+    const ids = new Set(PARTS.map((p) => p.id))
+    for (const id of OUTER_SHELL) expect(ids.has(id), id).toBe(true)
   })
 
   it('has only finite vertex positions', () => {
@@ -67,37 +91,25 @@ describe('FIA 2023 dimensions', () => {
   })
 
   it('keeps all bodywork within 2000 mm width; only tyres, rims and covers go wider (F-039)', () => {
-    for (const [id, list] of built) {
-      if (id === 'tyres' || id === 'wheel-rims') continue
+    for (const [id, all] of built) {
+      if (id === 'tyres') continue
+      // Rims and wheel covers may go wider (F-039); everything else on the wheels may not.
+      const list = id === 'wheel-rims' ? all.filter((p) => p.name === 'Wheel nut') : all
       const box = bounds(list)
       expect(box.max.z, id).toBeLessThanOrEqual(BODY_HALF_WIDTH + MM)
       expect(box.min.z, id).toBeGreaterThanOrEqual(-BODY_HALF_WIDTH - MM)
     }
   })
 
-  it('fits the front wing inside its reference volume, with at most four elements (F-040, F-026)', () => {
-    const box = bounds(pieces('front-wing'))
-    const [xFront, yLow] = fromFront(FRONT_WING_BOX.xfMin, 0, FRONT_WING_BOX.zMin)
-    const [xBack, yHigh] = fromFront(FRONT_WING_BOX.xfMax, 0, FRONT_WING_BOX.zMax)
-    expect(box.max.x).toBeLessThanOrEqual(xFront + MM)
-    expect(box.min.x).toBeGreaterThanOrEqual(xBack - MM)
-    expect(box.min.y).toBeGreaterThanOrEqual(yLow - MM)
-    expect(box.max.y).toBeLessThanOrEqual(yHigh + MM)
-    expect(Math.max(box.max.z, -box.min.z)).toBeLessThanOrEqual(FRONT_WING_BOX.yMax / 1000 + MM)
+  it('keeps every front wing vertex inside the real RV-FW volume, with at most four elements (F-040, F-026)', () => {
+    expect(outside(pieces('front-wing'), FRONT_AXLE_X, insideFrontWingVolume).slice(0, 5)).toEqual([])
     expect(named('front-wing', 'Front wing element').length).toBeLessThanOrEqual(MAX_FRONT_WING_ELEMENTS)
   })
 
-  it('fits the rear wing profiles inside RV-RW-PROFILES and the DRS flap within Y = 490 (F-041, F-042)', () => {
+  it('keeps every rear wing profile vertex inside RV-RW-PROFILES and the DRS flap within Y = 490 (F-041, F-042)', () => {
     const profiles = [...named('rear-wing', 'Rear wing main plane'), ...named('rear-wing', 'DRS flap')]
     expect(profiles).toHaveLength(2)
-    const box = bounds(profiles)
-    const [xNear, yLow] = fromRear(REAR_WING_BOX.xrMin, 0, REAR_WING_BOX.zMin)
-    const [xFar, yHigh] = fromRear(REAR_WING_BOX.xrMax, 0, REAR_WING_BOX.zMax)
-    expect(box.max.x).toBeLessThanOrEqual(xNear + MM)
-    expect(box.min.x).toBeGreaterThanOrEqual(xFar - MM)
-    expect(box.min.y).toBeGreaterThanOrEqual(yLow - MM)
-    expect(box.max.y).toBeLessThanOrEqual(yHigh + MM)
-    expect(box.max.z).toBeLessThanOrEqual(REAR_WING_BOX.yMax / 1000 + MM)
+    expect(outside(profiles, REAR_AXLE_X, insideRearWingProfiles).slice(0, 5)).toEqual([])
     expect(bounds(named('rear-wing', 'DRS flap')).max.z).toBeLessThanOrEqual(DRS_Y_MAX / 1000 + MM)
   })
 
@@ -136,14 +148,14 @@ describe('FIA 2023 dimensions', () => {
         disc.geometry.computeBoundingBox()
         const box = disc.geometry.boundingBox!
         const diameter = box.max.y - box.min.y
-        expect(diameter).toBeGreaterThanOrEqual(min - 1e-3)
+        expect(diameter).toBeGreaterThanOrEqual(min - MM)
         expect(diameter).toBeLessThanOrEqual(max + MM)
         expect(box.max.z - box.min.z).toBeLessThanOrEqual(0.032 + MM)
       }
     }
   })
 
-  it('puts the crankshaft at Z = 90 mm and the turbo shaft on the centre line (F-044, F-045)', () => {
+  it('puts the crankshaft at Z = 90 mm and the turbo shaft within 25 mm of the centre line (F-044, F-045)', () => {
     expect(CRANK_Y).toBeCloseTo(REFERENCE_PLANE_HEIGHT + 0.09, 9)
     const shaft = bounds(named('turbocharger', 'Turbo shaft'))
     expect(Math.max(shaft.max.z, -shaft.min.z)).toBeLessThanOrEqual(TURBO_SHAFT_Y_MAX_MM / 1000)

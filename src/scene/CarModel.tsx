@@ -21,7 +21,9 @@ const CarPart = memo(function CarPart({ id, meshes }: PartMeshes) {
   const picked = useCarStore((s) => s.selectedPartId === id || s.hoveredPartId === id)
   const hoverPart = useCarStore((s) => s.hoverPart)
   const selectPart = useCarStore((s) => s.selectPart)
-  const variant = ghost ? 'ghost' : picked ? 'highlight' : 'normal'
+  // A picked part always lights up, even when X-ray would make it see-through.
+  const variant = picked ? 'highlight' : ghost ? 'ghost' : 'normal'
+  const clickable = !ghost || picked
 
   return (
     <group
@@ -40,7 +42,7 @@ const CarPart = memo(function CarPart({ id, meshes }: PartMeshes) {
           key={m.material}
           geometry={m.geometry}
           material={getMaterial(m.material, mode, variant)}
-          raycast={ghost ? NO_RAYCAST : DEFAULT_RAYCAST}
+          raycast={clickable ? DEFAULT_RAYCAST : NO_RAYCAST}
         />
       ))}
     </group>
@@ -52,10 +54,10 @@ export function CarModel() {
   // Building the shapes takes a moment, so it happens once per mount, not on every render.
   const parts = useMemo<PartMeshes[]>(
     () =>
-      PARTS.filter((part) => PART_BUILDERS[part.id]).map((part) => ({
-        id: part.id,
-        meshes: mergeByMaterial(PART_BUILDERS[part.id]()),
-      })),
+      PARTS.flatMap((part) => {
+        const build = PART_BUILDERS[part.id]
+        return build ? [{ id: part.id, meshes: mergeByMaterial(build()) }] : []
+      }),
     [],
   )
 

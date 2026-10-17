@@ -17,7 +17,7 @@ export const REAR_AXLE_X = -WHEELBASE / 2
 export const REFERENCE_PLANE_HEIGHT = 0.04
 
 /** Tyres: diameter at most 725 mm (F-023); widths chosen inside the allowed ranges (F-022). */
-export const TYRE_DIAMETER = 0.72 // F-023
+export const TYRE_DIAMETER = 0.72 // F-023 (max 725 mm)
 export const FRONT_TYRE_WIDTH = 0.36 // F-022 (345–375 mm)
 export const REAR_TYRE_WIDTH = 0.455 // F-022 (440–470 mm)
 export const RIM_LIP_DIAMETER = 0.4906 // F-021
@@ -35,9 +35,7 @@ export const REAR_DISC_DIAMETER = 0.278 // F-025 (275–280 mm)
 /** Plank: 10 mm thick (F-037), from XF = 430 to XR = −600, top on the reference plane (F-043). */
 export const PLANK = { xfFront: 430, xrRear: -600, thickness: 0.01 } // F-037, F-043
 
-/** Reference volumes the wings must fit inside, in FIA millimetres. */
-export const FRONT_WING_BOX = { xfMin: -1350, xfMax: -475, yMax: 975, zMin: 0, zMax: 500 } // F-040
-export const REAR_WING_BOX = { xrMin: 140, xrMax: 555, yMax: 480, zMin: 670, zMax: 910 } // F-041
+/** The exact wing reference volumes (F-040, F-041) live in regulations.ts. */
 export const DRS_Y_MAX = 490 // F-042
 export const MAX_FRONT_WING_ELEMENTS = 4 // F-026
 

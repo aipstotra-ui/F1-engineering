@@ -35,7 +35,7 @@ const ENGINE_COVER: LoftStation[] = [
   { x: -1.5, halfWidth: 0.11, top: 0.45, bottom: 0.25, topSquareness: 2.4, bottomSquareness: 2.6 },
   { x: -1.8, halfWidth: 0.065, top: 0.42, bottom: 0.28, topSquareness: 2.2, bottomSquareness: 2.4 },
 ]
-// Left sidepod (mirrored for the right). RB19 style: high undercut at the front, steep downwash ramp behind.
+// Left sidepod (mirrored for the right). Styling: high undercut at the front, steep downward ramp behind.
 const SIDEPOD: LoftStation[] = [
   { x: 0.66, centerZ: 0.6, halfWidth: 0.15, top: 0.57, bottom: 0.31, topSquareness: 3, bottomSquareness: 3 },
   { x: 0.45, centerZ: 0.58, halfWidth: 0.19, top: 0.59, bottom: 0.2, topSquareness: 3.2, bottomSquareness: 3 },

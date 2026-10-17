@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { CAR_INTRO, SECTIONS, partsInSection, type FactId, type Part } from '../data/parts.ts'
 import { useCarStore } from '../state/carStore.ts'
 
@@ -9,25 +9,21 @@ function FactList({ facts }: { facts: FactId[] }) {
 }
 
 function PartRow({ part }: { part: Part }) {
-  const [openByClick, setOpenByClick] = useState(false)
-  const selected = useCarStore((s) => s.selectedPartId === part.id)
+  // The selected part (picked here or in the 3D view) is the one whose lesson is open.
+  const open = useCarStore((s) => s.selectedPartId === part.id)
   const selectPart = useCarStore((s) => s.selectPart)
   const row = useRef<HTMLLIElement>(null)
-  const open = openByClick || selected
 
   // A part clicked in the 3D view scrolls into sight here, with its lesson open.
   useEffect(() => {
-    if (selected) row.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [selected])
+    if (open) row.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [open])
 
   return (
-    <li className={selected ? 'part selected' : 'part'} ref={row}>
+    <li className={open ? 'part selected' : 'part'} ref={row}>
       <button
         className="part-header"
-        onClick={() => {
-          setOpenByClick(!open)
-          if (!open || selected) selectPart(part.id)
-        }}
+        onClick={() => selectPart(part.id)}
         aria-expanded={open}
         aria-controls={`lesson-${part.id}`}
       >

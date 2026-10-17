@@ -34,7 +34,7 @@ import type { MaterialKind, Piece } from './types.ts'
 
 export type { MaterialKind, Piece } from './types.ts'
 
-export const PART_BUILDERS: Record<string, () => Piece[]> = {
+export const PART_BUILDERS: Partial<Record<string, () => Piece[]>> = {
   monocoque,
   halo,
   seat,

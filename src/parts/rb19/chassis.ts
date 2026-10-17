@@ -136,7 +136,7 @@ export function tyres(): Piece[] {
       const h = (corner.width / 2 + 0.002) * out
       return [
         { name: `${corner.label} tyre`, material: 'rubber', geometry: turned(tyreProfile(corner.width), centre, 'z', 64) },
-        // Coloured sidewall band shows the compound (yellow = medium). Not a logo.
+        // Coloured sidewall band (styling). Not a logo.
         { name: 'Compound band', material: 'tyreStripe', geometry: turned([[0.3, h], [0.312, h]], centre, 'z', 64) },
       ]
     }),
@@ -150,11 +150,12 @@ export function wheelRims(): Piece[] {
       return [
         { name: `${corner.label} rim`, material: 'rimMetal', geometry: turned([[RIM_RADIUS, -h + 0.012], [RIM_RADIUS, h - 0.012]], centre, 'z') },
         // Wheel cover on the outer face (F-046).
-        { name: 'Wheel cover', material: 'carbon', geometry: turned([[0.001, out * (h - 0.01)], [RIM_RADIUS, out * (h - 0.01)]], centre, 'z') },
+        { name: 'Wheel cover', material: 'rimMetal', geometry: turned([[0.001, out * (h - 0.01)], [RIM_RADIUS, out * (h - 0.01)]], centre, 'z') },
         {
           name: 'Wheel nut',
           material: 'paintRed',
-          geometry: turned([[0.04, out * (h - 0.01)], [0.04, out * (h + 0.012)], [0.001, out * (h + 0.012)]], centre, 'z', 24),
+          // Recessed so it stays inside the tyre face (bodywork width limit, F-039).
+          geometry: turned([[0.04, out * (h - 0.025)], [0.04, out * (h - 0.004)], [0.001, out * (h - 0.004)]], centre, 'z', 24),
         },
       ]
     }),
