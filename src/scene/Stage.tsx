@@ -5,6 +5,7 @@ import { PARTS } from '../data/parts.ts'
 import { useCarStore } from '../state/carStore.ts'
 import { CanvasErrorBoundary } from './CanvasErrorBoundary.tsx'
 import { CarModel } from './CarModel.tsx'
+import { Effects } from './Effects.tsx'
 
 const PART_NAMES = new Map(PARTS.map((p) => [p.id, p.name]))
 const DEFAULT_CAMERA: [number, number, number] = [6.4, 2.5, 6.0]
@@ -26,11 +27,22 @@ function startingCamera(): [number, number, number] {
 const StudioLighting = memo(function StudioLighting() {
   return (
     <Environment resolution={256}>
-      <Lightformer intensity={4} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[12, 4, 1]} />
-      <Lightformer intensity={2} position={[-6, 2, 0]} rotation-y={Math.PI / 2} scale={[10, 2, 1]} />
-      <Lightformer intensity={2} position={[6, 2, 0]} rotation-y={-Math.PI / 2} scale={[10, 2, 1]} />
-      <Lightformer intensity={1.5} position={[0, 2, 6]} scale={[8, 2, 1]} />
-      <Lightformer intensity={1.2} color="#9ec9ff" position={[0, 1, -6]} rotation-y={Math.PI} scale={[8, 2, 1]} />
+      {/* Dim grey studio walls, so reflections have something darker than the lights to show. */}
+      <color attach="background" args={['#3a404b']} />
+      {/* Big overhead softbox: the main light and the long highlight along the bodywork. */}
+      <Lightformer form="rect" intensity={5} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[10, 3, 1]} />
+      {/* Thin light strips on both sides: the crisp reflection lines seen on car photos. */}
+      {[-1.5, 0, 1.5].map((x) => (
+        <Lightformer key={x} form="rect" intensity={3.5} position={[x * 2, 2.2, 5]} scale={[0.35, 6, 1]} />
+      ))}
+      {[-1.5, 0, 1.5].map((x) => (
+        <Lightformer key={x} form="rect" intensity={3.5} position={[x * 2, 2.2, -5]} rotation-y={Math.PI} scale={[0.35, 6, 1]} />
+      ))}
+      {/* Warm key from the front, cool rim from behind. */}
+      <Lightformer form="rect" intensity={3} color="#ffe2c4" position={[7, 2, 0]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} />
+      <Lightformer form="rect" intensity={1.6} color="#b8d4ff" position={[-7, 2.5, 0]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} />
+      {/* Floor bounce. */}
+      <Lightformer form="rect" intensity={0.4} position={[0, -1, 0]} rotation-x={-Math.PI / 2} scale={[10, 10, 1]} />
     </Environment>
   )
 })
@@ -47,10 +59,11 @@ function RealisticSet({ visible }: { visible: boolean }) {
     <>
       <StudioLighting />
       <group visible={visible}>
-        <directionalLight position={[4, 8, 5]} intensity={1.4} />
+        <directionalLight position={[4, 8, 5]} intensity={1.8} />
+        <hemisphereLight args={['#dfe8ff', '#1d222b', 0.35]} />
         <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
           <circleGeometry args={[12, 64]} />
-          <meshStandardMaterial color="#232a35" roughness={0.85} />
+          <meshStandardMaterial color="#1d222b" roughness={0.8} />
         </mesh>
         <BakedShadow />
       </group>
@@ -119,11 +132,12 @@ export default function Stage() {
       {/* "demand": the scene only redraws when something changes, so an idle page costs no GPU. */}
       <Canvas camera={camera} dpr={[1, 2]} frameloop="demand">
         {/* One background and fog for both modes, so switching can never leave the wrong one behind. */}
-        <color attach="background" args={[viewMode === 'realistic' ? '#1a212c' : '#050b18']} />
-        <fog attach="fog" args={viewMode === 'realistic' ? ['#1a212c', 10, 22] : ['#050b18', 30, 40]} />
+        <color attach="background" args={[viewMode === 'realistic' ? '#222a37' : '#050b18']} />
+        <fog attach="fog" args={viewMode === 'realistic' ? ['#222a37', 12, 26] : ['#050b18', 30, 40]} />
         <RealisticSet visible={viewMode === 'realistic'} />
         <HologramSet visible={viewMode === 'hologram'} />
         <CarModel />
+        <Effects mode={viewMode} />
         <OrbitControls target={CAR_CENTRE} enablePan={false} minDistance={2.5} maxDistance={12} maxPolarAngle={Math.PI / 2 - 0.05} />
       </Canvas>
       <ViewControls />

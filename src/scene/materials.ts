@@ -9,6 +9,7 @@ import {
   RepeatWrapping,
   ShaderMaterial,
   SRGBColorSpace,
+  Vector2,
   type Material,
 } from 'three'
 import type { MaterialKind } from '../parts/rb19/index.ts'
@@ -16,7 +17,7 @@ import type { ViewMode } from '../state/carStore.ts'
 export type Variant = 'normal' | 'highlight' | 'ghost'
 
 /** RB19-style colours without logos (docs/design.md). */
-const NAVY = '#1c2a4f'
+const NAVY = '#161c32' // the RB19's very dark, satin navy
 const RED = '#d8202f'
 const YELLOW = '#f5c400'
 
@@ -50,33 +51,77 @@ function carbonTexture(): CanvasTexture | null {
   return texture
 }
 
+/** Bump map for the weave: each tow is raised in the middle, so reflections ripple like real carbon. */
+function carbonNormalTexture(): CanvasTexture | null {
+  if (typeof document === 'undefined') return null
+  const size = 64
+  const cell = size / 8
+  const height = (px: number, py: number) => {
+    const x = ((px % size) + size) % size
+    const y = ((py % size) + size) % size
+    const cx = Math.floor(x / cell)
+    const cy = Math.floor(y / cell)
+    const warp = (cx + cy) % 4 < 2
+    const local = warp ? (x % cell) / cell : (y % cell) / cell
+    return Math.sin(local * Math.PI)
+  }
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  const image = ctx.createImageData(size, size)
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const dx = height(x + 1, y) - height(x - 1, y)
+      const dy = height(x, y + 1) - height(x, y - 1)
+      const nx = -dx * 2
+      const ny = -dy * 2
+      const length = Math.hypot(nx, ny, 1)
+      const i = (y * size + x) * 4
+      image.data[i] = ((nx / length) * 0.5 + 0.5) * 255
+      image.data[i + 1] = ((ny / length) * 0.5 + 0.5) * 255
+      image.data[i + 2] = ((1 / length) * 0.5 + 0.5) * 255
+      image.data[i + 3] = 255
+    }
+  }
+  ctx.putImageData(image, 0, 0)
+  const texture = new CanvasTexture(canvas)
+  texture.wrapS = texture.wrapT = RepeatWrapping
+  texture.repeat.set(6, 6)
+  return texture
+}
+
 let carbonMap: CanvasTexture | null | undefined
+let carbonNormal: CanvasTexture | null | undefined
 
 function realistic(kind: MaterialKind): MeshPhysicalMaterial {
   const base = { side: DoubleSide }
   switch (kind) {
     case 'paint':
-      return new MeshPhysicalMaterial({ ...base, color: NAVY, roughness: 0.55, metalness: 0.1, clearcoat: 0.3, clearcoatRoughness: 0.5 })
+      return new MeshPhysicalMaterial({ ...base, color: NAVY, roughness: 0.42, metalness: 0.25, clearcoat: 0.6, clearcoatRoughness: 0.28 })
     case 'paintRed':
       return new MeshPhysicalMaterial({ ...base, color: RED, roughness: 0.45, clearcoat: 0.4 })
     case 'paintYellow':
-      return new MeshPhysicalMaterial({ ...base, color: YELLOW, roughness: 0.45, clearcoat: 0.4 })
+      return new MeshPhysicalMaterial({ ...base, color: YELLOW, roughness: 0.4, metalness: 0.05, clearcoat: 0.5, clearcoatRoughness: 0.3 })
     case 'carbon':
     case 'carbonMatte': {
       if (carbonMap === undefined) carbonMap = carbonTexture()
+      if (carbonNormal === undefined) carbonNormal = carbonNormalTexture()
       const gloss = kind === 'carbon'
       return new MeshPhysicalMaterial({
         ...base,
         map: carbonMap ?? undefined,
+        normalMap: carbonNormal ?? undefined,
+        normalScale: gloss ? new Vector2(0.35, 0.35) : new Vector2(0.2, 0.2),
         roughness: gloss ? 0.35 : 0.75,
         metalness: gloss ? 0.2 : 0.05,
-        color: gloss ? '#ffffff' : '#9a9a9a',
+        color: gloss ? '#ffffff' : '#6e6e6e',
         clearcoat: gloss ? 0.9 : 0.05,
         clearcoatRoughness: 0.15,
       })
     }
     case 'rubber':
-      return new MeshPhysicalMaterial({ ...base, color: '#1e1e1e', roughness: 0.82, metalness: 0, sheen: 0.4, sheenColor: '#5a5a5a' })
+      return new MeshPhysicalMaterial({ ...base, color: '#141414', roughness: 0.68, metalness: 0, sheen: 0.15, sheenRoughness: 0.7, sheenColor: '#3a3a3a' })
     case 'tyreStripe':
       return new MeshPhysicalMaterial({ ...base, color: YELLOW, roughness: 0.7 })
     case 'rimMetal':
@@ -96,6 +141,8 @@ function realistic(kind: MaterialKind): MeshPhysicalMaterial {
       return new MeshPhysicalMaterial({ ...base, color: '#9aa3ab', roughness: 0.55, metalness: 0.7 })
     case 'plank':
       return new MeshPhysicalMaterial({ ...base, color: '#a07c4f', roughness: 0.8 })
+    case 'chrome':
+      return new MeshPhysicalMaterial({ ...base, color: '#e8ecf2', roughness: 0.04, metalness: 1 })
     case 'black':
       return new MeshPhysicalMaterial({ ...base, color: '#050505', roughness: 0.6 })
   }

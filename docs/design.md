@@ -26,4 +26,7 @@ Translucent glass panels with corner brackets and thin animated tick marks (HUD 
 - Materials live in `src/scene/materials.ts`, one shared instance per (material, view mode, variant). Variants: normal, highlight (picked/hovered), ghost (X-ray outer shell).
 - X-ray ghosts the outer shell (`OUTER_SHELL` in `src/parts/rb19/index.ts`) and makes it ignore clicks, so internals can be picked.
 - Dev only: `?cam=x,y,z` in the URL sets the starting camera, for screenshots from fixed angles (e.g. side `0.2,0.9,7.5`, top `0.36,9,0.01`).
+- Realism pass (from CC-licensed RB19 photos, F-047): satin navy + yellow nose/airbox livery panels (`loft` with `arc` + `inflate`), red rim lips, chrome mirrors, carbon with a generated normal map.
+- Screen effects (`src/scene/Effects.tsx`): N8AO ambient occlusion, light bloom, Neutral tone mapping (keeps livery colours true), SMAA. Hologram mode uses strong bloom instead.
+- Studio: Lightformer softboxes + thin strips for car-configurator reflection lines; no HDRI download.
 

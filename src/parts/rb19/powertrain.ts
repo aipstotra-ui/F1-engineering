@@ -106,7 +106,8 @@ export function controlElectronics(): Piece[] {
 }
 
 export function radiators(): Piece[] {
-  return pair(roundedBox([0.07, 0.3, 0.26], [0.3, 0.35, 0.6], 0.01, [0, 0, 0.6])).map((geometry) => ({
+  // Kept inside the sidepod above its deep undercut.
+  return pair(roundedBox([0.07, 0.24, 0.24], [0.3, 0.43, 0.58], 0.01, [0, 0, 0.6])).map((geometry) => ({
     name: 'Radiator',
     material: 'radiator' as const,
     geometry,

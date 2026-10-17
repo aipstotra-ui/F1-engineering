@@ -25,3 +25,4 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: Raw FastF1 data stays in a git-ignored cache; only small derived results (lap times, downsampled traces, fitted parameters) are committed.
 - 2026-10-17: After every step, Claude posts a step report in chat (format in `docs/workflow.md`).
 - 2026-10-17: Step 3b: the whole RB19 (exterior + internals) is built in code first: FIA-sized and test-checked, realistic + hologram + X-ray. AI/Blender parts can later replace individual code parts where they look better.
+- 2026-10-17: Realism for the code-built car comes from CC-licensed reference photos (viewed only, never stored in the repo), procedural textures and post-processing; no logos, no large asset files.

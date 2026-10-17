@@ -119,14 +119,15 @@ export function frontWing(): Piece[] {
       angleDeg: (s) => stack(s)[i].angle,
     }),
   }))
-  // Endplate in the tip/endplate region (Y 910–975 mm): up to Z 380 mm, front edge kept behind the §21.14 cut.
+  // Endplate in the tip/endplate region (Y 910–975 mm): up to Z 410 mm, front edge kept behind the §21.14 cut.
   const endplate = sidePlate(
     [
       [2.775, REF + 0.105],
       [2.31, REF + 0.131], // bottom edge rises with the §21.3 cut plane
-      [2.31, REF + 0.33],
-      [2.42, REF + 0.38],
-      [2.65, REF + 0.38],
+      [2.31, REF + 0.37],
+      [2.4, REF + 0.41],
+      [2.62, REF + 0.41],
+      [2.7, REF + 0.33],
       [2.77, REF + 0.2],
     ],
     FRONT_ENDPLATE_Z,
@@ -162,10 +163,12 @@ export function rearWing(): Piece[] {
     [
       [-1.93, 0.4],
       [-2.35, 0.4],
-      [-2.35, 0.9],
-      [-2.3, 0.95],
-      [-1.98, 0.95],
-      [-1.93, 0.88],
+      [-2.35, 0.88],
+      [-2.31, 0.93],
+      [-2.22, 0.955],
+      [-2.02, 0.95],
+      [-1.95, 0.92],
+      [-1.93, 0.86],
     ],
     0.485,
     0.008,

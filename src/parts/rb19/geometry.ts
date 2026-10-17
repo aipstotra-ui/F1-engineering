@@ -66,6 +66,13 @@ export interface LoftStation {
 }
 
 export interface LoftOptions {
+  /**
+   * Only part of the way round, for painted panels laid over a body: fractions of a full turn,
+   * 0 = bottom centre, 0.25 = left side (+z), 0.5 = top, 0.75 = right side. No end caps.
+   */
+  arc?: [number, number]
+  /** Grow every section by this much (metres) so a panel sits just above the body under it. */
+  inflate?: number
   /** Points around each section. */
   radial?: number
   /** Sections sampled along the body (smoothly interpolated between the given stations). */
@@ -76,7 +83,10 @@ export interface LoftOptions {
 
 /** Builds a smooth closed body through the given cross-sections (ordered front to back). */
 export function loft(stations: LoftStation[], options: LoftOptions = {}): BufferGeometry {
-  const { radial = 48, along = 48, capStart = true, capEnd = true } = options
+  const { radial = 48, along = 48, arc, inflate = 0 } = options
+  const capStart = arc ? false : (options.capStart ?? true)
+  const capEnd = arc ? false : (options.capEnd ?? true)
+  const [turnFrom, turnTo] = arc ?? [0, 1]
   if (stations.length < 2) throw new Error('loft needs at least two stations')
 
   const get = (key: keyof LoftStation, fallback: number) => stations.map((s) => (s[key] as number | undefined) ?? fallback)
@@ -98,9 +108,9 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
   for (let a = 0; a < along; a++) {
     const t = (a / (along - 1)) * (stations.length - 1)
     const x = catmull(xs, t)
-    const hw = Math.max(catmull(halfWidths, t), 1e-4)
-    const top = catmull(tops, t)
-    const bottom = catmull(bottoms, t)
+    const hw = Math.max(catmull(halfWidths, t), 1e-4) + inflate
+    const top = catmull(tops, t) + inflate
+    const bottom = catmull(bottoms, t) - inflate
     const cz = catmull(centers, t)
     const mid = (top + bottom) / 2
     const hh = Math.max((top - bottom) / 2, 1e-4)
@@ -109,7 +119,8 @@ export function loft(stations: LoftStation[], options: LoftOptions = {}): Buffer
 
     for (let r = 0; r < ringSize; r++) {
       // Start at the bottom centre so the texture seam is hidden underneath.
-      const theta = -Math.PI / 2 + (r / radial) * Math.PI * 2
+      const turn = turnFrom + (turnTo - turnFrom) * (r / radial)
+      const theta = -Math.PI / 2 + turn * Math.PI * 2
       const c = Math.cos(theta)
       const s = Math.sin(theta)
       const e = 2 / (s >= 0 ? catmull(topSq, t) : catmull(bottomSq, t))

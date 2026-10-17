@@ -3,7 +3,7 @@
 // RB19 photos (metres, car frame: x forward, y up from the ground, z sideways).
 import { CylinderGeometry } from 'three'
 import { PLANK, REFERENCE_PLANE_HEIGHT as REF, fromFront, fromRear } from './frame.ts'
-import { loft, pair, roundedBox, sidePlate, topPlate, tubeThrough, type LoftStation } from './geometry.ts'
+import { loft, pair, roundedBox, sidePlate, strut, topPlate, tubeThrough, type LoftStation } from './geometry.ts'
 import type { Piece } from './types.ts'
 
 const NOSE_TIP: LoftStation[] = [
@@ -26,22 +26,23 @@ const MONOCOQUE: LoftStation[] = [
   { x: 0.05, halfWidth: 0.4, top: 0.63, bottom: 0.07, topSquareness: 4, bottomSquareness: 4 },
 ]
 const ENGINE_COVER: LoftStation[] = [
-  { x: 0.36, halfWidth: 0.13, top: 0.93, bottom: 0.7, topSquareness: 2.2, bottomSquareness: 2.5 },
-  { x: 0.2, halfWidth: 0.22, top: 0.95, bottom: 0.58, topSquareness: 2.4, bottomSquareness: 3 },
+  { x: 0.36, halfWidth: 0.1, top: 0.95, bottom: 0.72, topSquareness: 1.7, bottomSquareness: 2.2 },
+  { x: 0.2, halfWidth: 0.2, top: 0.965, bottom: 0.58, topSquareness: 2, bottomSquareness: 3 },
   { x: 0.0, halfWidth: 0.3, top: 0.9, bottom: 0.4, topSquareness: 2.6, bottomSquareness: 3 },
-  { x: -0.35, halfWidth: 0.33, top: 0.78, bottom: 0.22, topSquareness: 2.8, bottomSquareness: 3 },
-  { x: -0.75, halfWidth: 0.27, top: 0.64, bottom: 0.2, topSquareness: 2.8, bottomSquareness: 3 },
+  { x: -0.35, halfWidth: 0.33, top: 0.78, bottom: 0.22, topSquareness: 3.2, bottomSquareness: 3 },
+  { x: -0.75, halfWidth: 0.27, top: 0.64, bottom: 0.2, topSquareness: 3.2, bottomSquareness: 3 },
   { x: -1.15, halfWidth: 0.18, top: 0.52, bottom: 0.22, topSquareness: 2.6, bottomSquareness: 3 },
   { x: -1.5, halfWidth: 0.11, top: 0.45, bottom: 0.25, topSquareness: 2.4, bottomSquareness: 2.6 },
   { x: -1.8, halfWidth: 0.065, top: 0.42, bottom: 0.28, topSquareness: 2.2, bottomSquareness: 2.4 },
 ]
 // Left sidepod (mirrored for the right). Styling: high undercut at the front, steep downward ramp behind.
 const SIDEPOD: LoftStation[] = [
-  { x: 0.66, centerZ: 0.6, halfWidth: 0.15, top: 0.57, bottom: 0.31, topSquareness: 3, bottomSquareness: 3 },
-  { x: 0.45, centerZ: 0.58, halfWidth: 0.19, top: 0.59, bottom: 0.2, topSquareness: 3.2, bottomSquareness: 3 },
-  { x: 0.1, centerZ: 0.48, halfWidth: 0.25, top: 0.56, bottom: 0.1, topSquareness: 3.2, bottomSquareness: 3.5 },
-  { x: -0.3, centerZ: 0.42, halfWidth: 0.23, top: 0.44, bottom: 0.08, topSquareness: 3, bottomSquareness: 3.5 },
-  { x: -0.7, centerZ: 0.36, halfWidth: 0.18, top: 0.31, bottom: 0.075, topSquareness: 2.8, bottomSquareness: 3 },
+  { x: 0.66, centerZ: 0.6, halfWidth: 0.15, top: 0.6, bottom: 0.42, topSquareness: 4.5, bottomSquareness: 3 },
+  { x: 0.5, centerZ: 0.59, halfWidth: 0.18, top: 0.615, bottom: 0.3, topSquareness: 4.5, bottomSquareness: 2.6 },
+  { x: 0.25, centerZ: 0.54, halfWidth: 0.23, top: 0.59, bottom: 0.14, topSquareness: 4.2, bottomSquareness: 2.6 },
+  { x: -0.05, centerZ: 0.47, halfWidth: 0.25, top: 0.52, bottom: 0.09, topSquareness: 4, bottomSquareness: 3 },
+  { x: -0.4, centerZ: 0.41, halfWidth: 0.22, top: 0.4, bottom: 0.08, topSquareness: 3.6, bottomSquareness: 3.5 },
+  { x: -0.75, centerZ: 0.35, halfWidth: 0.17, top: 0.29, bottom: 0.075, topSquareness: 3.2, bottomSquareness: 3 },
   { x: -1.1, centerZ: 0.3, halfWidth: 0.12, top: 0.2, bottom: 0.075, topSquareness: 2.5, bottomSquareness: 3 },
 ]
 
@@ -60,13 +61,20 @@ export function monocoque(): Piece[] {
     { name: 'Survival cell', material: 'paint', geometry: loft(MONOCOQUE) },
     { name: 'Cockpit opening', material: 'black', geometry: opening },
     { name: 'Cockpit rim', material: 'carbon', geometry: tubeThrough(cockpitRim, 0.018, true) },
+    ...pair(roundedBox([0.07, 0.05, 0.14], [0.78, 0.69, 0.52], 0.02)).map((geometry) => ({ name: 'Mirror housing', material: 'paint' as const, geometry })),
+    ...pair(roundedBox([0.004, 0.04, 0.12], [0.744, 0.69, 0.52], 0.002)).map((geometry) => ({ name: 'Mirror glass', material: 'chrome' as const, geometry })),
+    ...pair(strut([0.8, 0.665, 0.47], [0.86, 0.6, 0.33], 0.012, 0.5)).map((geometry) => ({ name: 'Mirror stalk', material: 'carbon' as const, geometry })),
   ]
 }
 
 export function nose(): Piece[] {
+  const body = [NOSE_TIP[0], ...NOSE]
+  // Livery (F-047): the RB19's nose is yellow on top and navy underneath. The panel stops just before the
+  // nose meets the chassis, so two painted surfaces never fight at the same spot.
+  const panel = [...body.slice(0, -1), { ...body[body.length - 1], x: 2.06, halfWidth: 0.19, top: 0.54, bottom: 0.18 }]
   return [
-    { name: 'Nose tip', material: 'paintYellow', geometry: loft(NOSE_TIP, { along: 8 }) },
-    { name: 'Nose', material: 'paint', geometry: loft(NOSE) },
+    { name: 'Nose', material: 'paint', geometry: loft(body) },
+    { name: 'Nose livery', material: 'paintYellow', geometry: loft(panel, { arc: [0.3, 0.7], inflate: 0.003 }) },
   ]
 }
 
@@ -87,7 +95,12 @@ export function halo(): Piece[] {
 }
 
 export function seat(): Piece[] {
+  const headrest = Array.from({ length: 9 }, (_, i) => {
+    const phi = Math.PI / 2 + (i / 8) * Math.PI // rear half of the cockpit opening
+    return [0.6 + 0.31 * Math.cos(phi), 0.6, 0.22 * Math.sin(phi)] as [number, number, number]
+  })
   return [
+    { name: 'Headrest', material: 'carbonMatte', geometry: tubeThrough(headrest, 0.038) },
     { name: 'Seat back', material: 'carbonMatte', geometry: roundedBox([0.05, 0.36, 0.38], [0.3, 0.38, 0], 0.02, [0, 0, -0.45]) },
     { name: 'Seat base', material: 'carbonMatte', geometry: roundedBox([0.42, 0.04, 0.34], [0.55, 0.12, 0], 0.02) },
   ]
@@ -107,22 +120,25 @@ export function steeringWheel(): Piece[] {
 }
 
 export function sidepods(): Piece[] {
-  const inlet = roundedBox([0.01, 0.19, 0.22], [0.665, 0.44, 0.6], 0.03)
+  const inlet = roundedBox([0.01, 0.13, 0.22], [0.665, 0.51, 0.6], 0.03)
+  // The upper lip overhangs the letterbox inlet, as on the RB19.
+  const lip = roundedBox([0.08, 0.012, 0.27], [0.69, 0.604, 0.6], 0.005)
   return [
     ...pair(loft(SIDEPOD)).map((geometry) => ({ name: 'Sidepod', material: 'paint' as const, geometry })),
     ...pair(inlet).map((geometry) => ({ name: 'Radiator inlet', material: 'black' as const, geometry })),
+    ...pair(lip).map((geometry) => ({ name: 'Inlet lip', material: 'paint' as const, geometry })),
   ]
 }
 
 export function engineCover(): Piece[] {
   const inlet = new CylinderGeometry(1, 1, 0.01, 32)
   inlet.rotateZ(Math.PI / 2)
-  inlet.scale(1, 0.075, 0.095)
-  inlet.translate(0.365, 0.835, 0)
+  inlet.scale(1, 0.085, 0.065)
+  inlet.translate(0.365, 0.84, 0)
   const lip = tubeThrough(
     Array.from({ length: 12 }, (_, i) => {
       const phi = (i / 12) * Math.PI * 2
-      return [0.366, 0.835 + 0.078 * Math.sin(phi), 0.098 * Math.cos(phi)] as [number, number, number]
+      return [0.366, 0.84 + 0.088 * Math.sin(phi), 0.068 * Math.cos(phi)] as [number, number, number]
     }),
     0.008,
     true,
@@ -131,6 +147,26 @@ export function engineCover(): Piece[] {
     { name: 'Engine cover', material: 'paint', geometry: loft(ENGINE_COVER) },
     { name: 'Airbox inlet', material: 'black', geometry: inlet },
     { name: 'Airbox lip', material: 'paintRed', geometry: lip },
+    // Livery (F-047): yellow airbox top. TV camera on top of the roll hoop.
+    { name: 'Airbox livery', material: 'paintYellow', geometry: loft(ENGINE_COVER.slice(0, 3), { arc: [0.3, 0.7], inflate: 0.003, along: 16 }) },
+    {
+      name: 'Engine cover fin',
+      material: 'paint',
+      geometry: sidePlate(
+        [
+          [0.12, 0.93],
+          [-0.5, 0.74],
+          [-1.15, 0.56],
+          [-1.15, 0.5],
+          [-0.5, 0.68],
+          [0.12, 0.88],
+        ],
+        0,
+        0.006,
+      ),
+    },
+    { name: 'TV camera', material: 'black', geometry: roundedBox([0.12, 0.03, 0.05], [0.22, 1.0, 0], 0.01) },
+    { name: 'Camera mount', material: 'carbon', geometry: strut([0.22, 0.955, 0], [0.22, 0.99, 0], 0.008) },
   ]
 }
 
@@ -170,6 +206,19 @@ export function floor(): Piece[] {
     )
   return [
     { name: 'Floor', material: 'carbonMatte', geometry: topPlate(outline, REF, FLOOR_THICKNESS) },
+    ...pair(
+      sidePlate(
+        [
+          [0.7, REF + 0.02],
+          [-0.55, REF + 0.02],
+          [-0.55, REF + 0.07],
+          [0.0, REF + 0.06],
+          [0.7, REF + 0.045],
+        ],
+        0.795,
+        0.006,
+      ),
+    ).map((geometry) => ({ name: 'Floor edge lip', material: 'carbon' as const, geometry })),
     ...pair(inletRoof).map((geometry) => ({ name: 'Tunnel inlet', material: 'carbonMatte' as const, geometry })),
     ...[0.1, 0.22, 0.34].flatMap((z) =>
       pair(fence(z)).map((geometry) => ({ name: 'Floor fence', material: 'carbon' as const, geometry })),

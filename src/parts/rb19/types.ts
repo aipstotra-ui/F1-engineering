@@ -18,6 +18,7 @@ export type MaterialKind =
   | 'radiator'
   | 'plank'
   | 'black'
+  | 'chrome' // mirror glass
 
 /** One mesh of a part: a shape plus what it's made of. Shapes are already placed in the car frame. */
 export interface Piece {
