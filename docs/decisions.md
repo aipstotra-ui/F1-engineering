@@ -26,3 +26,9 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: After every step, Claude posts a step report in chat (format in `docs/workflow.md`).
 - 2026-10-17: Step 3b: the whole RB19 (exterior + internals) is built in code first: FIA-sized and test-checked, realistic + hologram + X-ray. AI/Blender parts can later replace individual code parts where they look better.
 - 2026-10-17: Realism for the code-built car comes from CC-licensed reference photos (viewed only, never stored in the repo), procedural textures and post-processing; no logos, no large asset files.
+- 2026-10-17: 3D quality pipeline = AI base shapes (Hunyuan3D 2.1 / TRELLIS.2) + finishing and precise modelling in Blender via MCP for Blender (reviewed v2.1.9, telemetry disabled, project-local). Smooth bodywork like sidepods is modelled in Blender rather than generated.
+- 2026-10-17: Every generated/downloaded .glb passes `scripts/check-glb.mjs` before use.
+- 2026-10-17: Stay on the free Hugging Face tier: one AI 3D run per day from the queue in `docs/parts-pipeline.md`; Blender covers finishing and bodywork.
+- 2026-10-17: NVIDIA API (TRELLIS v1, trial credits only) skipped: older model than Hugging Face's Hunyuan3D 2.1 / TRELLIS.2 and not free long-term. AI starting shapes come from Hunyuan3D 2.1 on the free HF tier; Blender (MCP for Blender) does finishing.
+- 2026-10-18: Turbo test result: Hunyuan3D 2.1 + Blender finish is far more detailed and realistic than the code-built turbo; raw AI output is too chrome-like to use without finishing. 
+- 2026-10-18: GO: hero parts (turbo, brake calipers, V6 engine, gearbox, MGU-K, steering wheel, uprights, exhaust) use Hunyuan3D 2.1 + Blender finishing, one per free daily run; all other parts stay code-built.
