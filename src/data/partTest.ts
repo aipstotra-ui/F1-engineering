@@ -19,11 +19,12 @@ export interface Candidate {
 
 export const TEST_PARTS: TestPart[] = [
   { id: 'turbocharger', name: 'Turbocharger', reference: '/models/parts-test/ref/turbocharger.webp' },
-  { id: 'brake-caliper', name: 'Brake caliper', reference: '/models/parts-test/ref/brake-caliper.webp' },
+  { id: 'brake-calipers', name: 'Brake caliper', reference: '/models/parts-test/ref/brake-caliper.webp' },
   { id: 'sidepods', name: 'Sidepod' }, // AI pictures failed; modelled in Blender instead
 ]
 
 // Filled in as parts are generated; see the sources table in docs/parts-pipeline.md.
+// Part ids match src/data/parts.ts. Triangles and sizes are copied from `node scripts/check-glb.mjs <file>`.
 export const CANDIDATES: Candidate[] = [
   {
     partId: 'turbocharger',
@@ -31,7 +32,7 @@ export const CANDIDATES: Candidate[] = [
     licence: 'Tencent Hunyuan Community',
     model: '/models/parts-test/hunyuan3d-2.1/turbocharger.glb',
     triangles: 40000,
-    sizeMB: 0.93,
+    sizeMB: 0.56,
   },
   {
     partId: 'turbocharger',
@@ -39,7 +40,7 @@ export const CANDIDATES: Candidate[] = [
     licence: 'Tencent Hunyuan Community',
     model: '/models/parts-test/hunyuan3d-2.1-blender/turbocharger.glb',
     triangles: 40000,
-    sizeMB: 1.89,
+    sizeMB: 0.79,
   },
 ]
 

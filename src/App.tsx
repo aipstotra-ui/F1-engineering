@@ -12,10 +12,15 @@ const SCREENS = [
 ] as const
 
 // Which screen to show comes from the address bar (#garage or #part-test), so links and the back button work.
+function currentScreen(): string {
+  const hash = window.location.hash
+  return SCREENS.some((screen) => screen.hash === hash) ? hash : '#garage'
+}
+
 function useScreenHash() {
-  const [hash, setHash] = useState(window.location.hash || '#garage')
+  const [hash, setHash] = useState(currentScreen)
   useEffect(() => {
-    const onChange = () => setHash(window.location.hash || '#garage')
+    const onChange = () => setHash(currentScreen())
     window.addEventListener('hashchange', onChange)
     return () => window.removeEventListener('hashchange', onChange)
   }, [])

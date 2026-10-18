@@ -13,7 +13,13 @@ export function PartTest() {
     <div className="part-test">
       <nav className="part-test-tabs" aria-label="Test parts">
         {TEST_PARTS.map((p) => (
-          <button key={p.id} className={p.id === part.id ? 'active' : ''} onClick={() => setPartId(p.id)}>
+          <button
+            key={p.id}
+            type="button"
+            className={p.id === part.id ? 'active' : ''}
+            aria-pressed={p.id === part.id}
+            onClick={() => setPartId(p.id)}
+          >
             {p.name}
           </button>
         ))}
@@ -26,16 +32,24 @@ export function PartTest() {
               <figcaption>Reference picture (input for the generators)</figcaption>
             </>
           ) : (
-            <figcaption>No AI reference: this part is modelled by hand in Blender.</figcaption>
+            <figcaption className="part-test-note">No AI reference: this part is modelled by hand in Blender.</figcaption>
           )}
         </figure>
         <div className="part-test-viewer">
           {candidates.length === 0 ? (
             <div className="stage-fallback">No 3D candidates generated for this part yet.</div>
           ) : (
-            <Suspense fallback={<div className="stage-fallback">Loading 3D view…</div>}>
-              <PartTestViewer candidates={candidates} />
-            </Suspense>
+            <>
+              <Suspense fallback={<div className="stage-fallback">Loading 3D view…</div>}>
+                <PartTestViewer candidates={candidates} />
+              </Suspense>
+              {/* Names in the same left-to-right order as the models. */}
+              <ol className="candidate-labels">
+                {candidates.map((c) => (
+                  <li key={c.model}>{c.tool}</li>
+                ))}
+              </ol>
+            </>
           )}
         </div>
       </div>

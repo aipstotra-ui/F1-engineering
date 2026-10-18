@@ -61,5 +61,9 @@ Run `F1_PROJECT_ROOT=/Users/aic/Desktop/F1 uv run scripts/ai-parts/generate.py h
 ## Part sources & licences
 | Part ID | Tool | Date | Licence / terms | Notes |
 |---|---|---|---|---|
-| turbocharger | Hunyuan3D 2.1 (HF Space tencent/Hunyuan3D-2.1) | 2026-10-18 | Tencent Hunyuan Community licence (outputs usable; licence territory excludes EU, UK, South Korea) | 40k tris, 2 × 2048 px PBR textures embedded as data URIs (one JPEG mislabelled PNG); cleaned to 0.40 m, 0.93 MB |
-| turbocharger (finished) | Hunyuan3D 2.1 + Blender 5.2.2 (MCP for Blender) | 2026-10-18 | as above | Roughness raised to satin (0.35–0.62), base colour brightened, bronze→blue heat tint on turbine end, baked to 1024 px; smooth by angle 40°; 1.89 MB. Work file: assets-raw/blender/turbocharger-finish.blend |
+| turbocharger | Hunyuan3D 2.1 (HF Space tencent/Hunyuan3D-2.1) | 2026-10-18 | Tencent Hunyuan Community licence (outputs usable; licence territory excludes EU, UK, South Korea) | 40k tris, 2 × 2048 px PBR textures embedded as data URIs (one JPEG mislabelled PNG); cleaned to 0.40 m, 0.56 MB (JPEG colour + WebP metal/roughness, smooth normals added) |
+| turbocharger (finished) | Hunyuan3D 2.1 + Blender 5.2.2 (MCP for Blender) | 2026-10-18 | as above | Roughness raised to satin (0.35–0.62), base colour brightened, bronze→blue heat tint on turbine end, baked to 1024 px; smooth by angle 40°; 0.79 MB. Work file: assets-raw/blender/turbocharger-finish.blend |
+| ref/turbocharger.webp, ref/brake-caliper.webp | FLUX.1-schnell (HF Space black-forest-labs/FLUX.1-schnell) | 2026-10-17 | Apache-2.0 | Reference pictures, no logos or text |
+
+**Before a public release:** the Hunyuan3D licence excludes the EU, UK and South Korea, and files in `public/` are served to every visitor (the repo and Vercel previews are public). Re-check the licence terms for distributing outputs before launching beyond a personal/school project.
+

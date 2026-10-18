@@ -57,6 +57,9 @@ beforeAll(async () => {
   writeRawGlb(join(dir, 'script.glb'), { asset: { version: '2.0', generator: '<script>alert(1)</script>' } })
   writeRawGlb(join(dir, 'odd-extension.glb'), { asset: { version: '2.0' }, extensionsUsed: ['VENDOR_unknown'] })
   writeFileSync(join(dir, 'fake.glb'), 'this is not a 3D file')
+  writeRawGlb(join(dir, 'html-uri.glb'), { asset: { version: '2.0' }, images: [{ uri: 'data:text/html;base64,PHNjcmlwdD4=' }] })
+  writeRawGlb(join(dir, 'file-uri.glb'), { asset: { version: '2.0' }, buffers: [{ byteLength: 4, uri: 'file:///etc/passwd' }] })
+  writeFileSync(join(dir, 'huge.glb'), Buffer.alloc(5 * 1024 * 1024 + 1))
   // Like Hunyuan3D's output: a 3 MB texture embedded as a data URI inside the JSON chunk.
   writeRawGlb(join(dir, 'embedded-texture.glb'), {
     asset: { version: '2.0' },
@@ -82,6 +85,9 @@ describe('check-glb', () => {
     ['script.glb', 'script-like text'],
     ['odd-extension.glb', 'unexpected extension'],
     ['fake.glb', 'not a binary glTF'],
+    ['html-uri.glb', 'outside file/URL'],
+    ['file-uri.glb', 'outside file/URL'],
+    ['huge.glb', 'above the 5 MB cap'],
   ])('rejects %s', (file, reason) => {
     const { code, out } = runCheck(join(dir, file))
     expect(code).toBe(1)
@@ -106,6 +112,17 @@ describe('clean-part', () => {
     const out = join(dir, 'mislabelled-clean.glb')
     execFileSync('node', ['scripts/clean-part.mjs', raw, out, '0.5'], { encoding: 'utf8' })
     expect(runCheck(out).code).toBe(0)
+    // The generator left out normals; clean-part adds them so the part isn't drawn black.
+    const { MeshoptDecoder } = await import('meshoptimizer')
+    const { ALL_EXTENSIONS } = await import('@gltf-transform/extensions')
+    await MeshoptDecoder.ready
+    const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder })
+    const cleaned = await io.read(out)
+    expect(cleaned.getRoot().listMeshes()[0].listPrimitives()[0].getAttribute('NORMAL')).not.toBeNull()
+  })
+
+  it('refuses to clean an unsafe file', () => {
+    expect(() => execFileSync('node', ['scripts/clean-part.mjs', join(dir, 'external.glb'), join(dir, 'x.glb'), '0.5'], { encoding: 'utf8' })).toThrow()
   })
 
   it('centres the part, scales its longest side and keeps it safe', async () => {

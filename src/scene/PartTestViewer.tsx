@@ -1,6 +1,6 @@
 import { Component, Suspense, useRef, type ReactNode } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Center, ContactShadows, Environment, Html, Lightformer, OrbitControls, Resize, useGLTF } from '@react-three/drei'
+import { Center, ContactShadows, Environment, Lightformer, OrbitControls, Resize, useGLTF } from '@react-three/drei'
 import type { Group } from 'three'
 import type { Candidate } from '../data/partTest.ts'
 import { CanvasErrorBoundary } from './CanvasErrorBoundary.tsx'
@@ -14,7 +14,8 @@ class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
     return { failed: true }
   }
   render() {
-    return this.state.failed ? <Html center>Couldn’t load this model</Html> : this.props.children
+    // The table under the viewer still lists the model, so an empty spot is enough here.
+    return this.state.failed ? null : this.props.children
   }
 }
 
@@ -35,7 +36,7 @@ function Turntable({ candidate, x }: { candidate: Candidate; x: number }) {
     <group position-x={x}>
       <group ref={spinner} position-y={0.5}>
         <ModelErrorBoundary>
-          <Suspense fallback={<Html center>Loading…</Html>}>
+          <Suspense fallback={null}>
             <Resize scale={1}>
               <Center>
                 <Model url={candidate.model} />
@@ -44,9 +45,6 @@ function Turntable({ candidate, x }: { candidate: Candidate; x: number }) {
           </Suspense>
         </ModelErrorBoundary>
       </group>
-      <Html position={[0, -0.15, 0]} center className="candidate-label">
-        {candidate.tool}
-      </Html>
     </group>
   )
 }
@@ -55,9 +53,10 @@ function Turntable({ candidate, x }: { candidate: Candidate; x: number }) {
 function StudioLighting() {
   return (
     <Environment resolution={256}>
-      <Lightformer intensity={2} position={[0, 5, -2]} scale={[10, 2, 1]} />
-      <Lightformer intensity={1.5} position={[-5, 2, 2]} rotation-y={Math.PI / 2} scale={[6, 2, 1]} />
-      <Lightformer intensity={1.5} position={[5, 2, 2]} rotation-y={-Math.PI / 2} scale={[6, 2, 1]} />
+      <Lightformer intensity={4} position={[0, 5, -2]} scale={[10, 2, 1]} />
+      <Lightformer intensity={3} position={[-5, 2, 2]} rotation-y={Math.PI / 2} scale={[6, 2, 1]} />
+      <Lightformer intensity={2} position={[0, 2, 5]} scale={[8, 2, 1]} />
+      <Lightformer intensity={3} position={[5, 2, 2]} rotation-y={-Math.PI / 2} scale={[6, 2, 1]} />
     </Environment>
   )
 }
@@ -67,9 +66,10 @@ export default function PartTestViewer({ candidates }: { candidates: Candidate[]
 
   return (
     <CanvasErrorBoundary>
-      <Canvas camera={{ position: [0, 1.4, 3.2], fov: 45 }}>
+      <Canvas camera={{ position: [0, 1.0, 2.4], fov: 45 }}>
         <color attach="background" args={['#0b1424']} />
         <StudioLighting />
+        <directionalLight position={[3, 5, 4]} intensity={1.5} />
         {candidates.map((candidate, i) => (
           <Turntable key={candidate.model} candidate={candidate} x={i * SPACING - offset} />
         ))}

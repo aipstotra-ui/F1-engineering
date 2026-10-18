@@ -23,7 +23,7 @@ from pathlib import Path
 from gradio_client import Client, handle_file
 
 sys.path.insert(0, str(Path(__file__).parent))
-from prompts import PROMPTS, STYLE  # noqa: E402
+from prompts import PROMPTS, STYLE
 
 # F1_PROJECT_ROOT lets the script run from another checkout (e.g. a git worktree) but use the project's assets-raw/.
 ROOT = Path(os.environ.get("F1_PROJECT_ROOT") or Path(__file__).resolve().parents[2])
@@ -53,9 +53,18 @@ def reference(part: str) -> None:
     save(result, RAW / "ref" / part)
 
 
+def reference_image(part: str) -> Path:
+    """The reference picture for a part, whatever format it was saved in (FLUX returns .webp)."""
+    for suffix in (".png", ".webp", ".jpg", ".jpeg"):
+        path = RAW / "ref" / f"{part}{suffix}"
+        if path.exists():
+            return path
+    sys.exit(f"No reference picture for {part} in {RAW / 'ref'}")
+
+
 def hunyuan(part: str) -> None:
     client = Client("tencent/Hunyuan3D-2.1", verbose=False)
-    result = client.predict(image=handle_file(str(RAW / "ref" / f"{part}.png")), mv_image_front=None,
+    result = client.predict(image=handle_file(str(reference_image(part))), mv_image_front=None,
                             mv_image_back=None, mv_image_left=None, mv_image_right=None, steps=30,
                             guidance_scale=5.0, seed=1234, octree_resolution=256, check_box_rembg=True,
                             num_chunks=8000, randomize_seed=False, api_name="/generation_all")
@@ -65,7 +74,7 @@ def hunyuan(part: str) -> None:
 def trellis(part: str) -> None:
     client = Client("microsoft/TRELLIS.2", verbose=False)
     client.predict(api_name="/start_session")
-    image = client.predict(input=handle_file(str(RAW / "ref" / f"{part}.png")), api_name="/preprocess_image")
+    image = client.predict(input=handle_file(str(reference_image(part))), api_name="/preprocess_image")
     client.predict(image=image, seed=0, resolution="1024", api_name="/image_to_3d")
     glb, _ = client.predict(decimation_target=200000, texture_size=1024, api_name="/extract_glb")
     save(glb, RAW / "trellis.2" / part)
