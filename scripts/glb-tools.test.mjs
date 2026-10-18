@@ -57,6 +57,11 @@ beforeAll(async () => {
   writeRawGlb(join(dir, 'script.glb'), { asset: { version: '2.0', generator: '<script>alert(1)</script>' } })
   writeRawGlb(join(dir, 'odd-extension.glb'), { asset: { version: '2.0' }, extensionsUsed: ['VENDOR_unknown'] })
   writeFileSync(join(dir, 'fake.glb'), 'this is not a 3D file')
+  // Like Hunyuan3D's output: a 3 MB texture embedded as a data URI inside the JSON chunk.
+  writeRawGlb(join(dir, 'embedded-texture.glb'), {
+    asset: { version: '2.0' },
+    images: [{ uri: `data:image/png;base64,${'A'.repeat(3 * 1024 * 1024)}` }],
+  })
 })
 
 afterAll(() => rmSync(dir, { recursive: true, force: true }))
@@ -66,6 +71,10 @@ describe('check-glb', () => {
     const { code, out } = runCheck(join(dir, 'box.glb'))
     expect(code).toBe(0)
     expect(out).toContain('"triangles":12')
+  })
+
+  it('passes a .glb whose textures are embedded as data URIs in the JSON', () => {
+    expect(runCheck(join(dir, 'embedded-texture.glb')).code).toBe(0)
   })
 
   it.each([

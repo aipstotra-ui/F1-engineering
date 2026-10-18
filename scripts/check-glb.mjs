@@ -5,7 +5,9 @@ import { readFileSync, statSync } from 'node:fs'
 
 const HARD_CAP_BYTES = 5 * 1024 * 1024 // docs/parts-pipeline.md: 5 MB hard cap
 const TARGET_BYTES = 2 * 1024 * 1024 // 2 MB target (warning only)
-const MAX_JSON_BYTES = 2 * 1024 * 1024
+// AI tools often embed their textures as base64 text inside the JSON, so the JSON can be most of the
+// file. The file-size cap above already bounds it.
+const MAX_JSON_BYTES = HARD_CAP_BYTES
 const ALLOWED_EXTENSIONS = new Set([
   'KHR_materials_emissive_strength',
   'KHR_materials_ior',
