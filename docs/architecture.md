@@ -23,8 +23,10 @@ Rule of thumb: **if it runs while the user is using the app, it's TypeScript; if
 src/
   sim/        physics only, no React/three imports: aero.ts, powerUnit.ts, tyres.ts, lapSim.ts + *.test.ts
   data/       parts.ts (part catalog), rb19.ts (stock CarConfig), circuits/*.json, lessons/, missions.ts
-  state/      carStore.ts: built parts, chosen specs, adjustments, view mode, build progress
+  state/      carStore.ts (zustand): view mode, X-ray, hovered/selected part; later specs, adjustments, build progress
   scene/      Studio.tsx, CameraRig.tsx (fly-to-section), materials.ts, hologramShader.ts
+  parts/rb19/ the code-built RB19 (Step 3b): frame.ts (FIA sizes + coordinate helpers), geometry.ts (loft, NACA wings, struts, lathe),
+              bodywork/aero/chassis/powertrain builders → Piece[] per catalog part; index.ts maps part id → builder
   parts/      code-built parts (FrontWing, RearWing, Floor, Suspension, Wheel, BrakeDisc, Halo) + AiPart.tsx (.glb loader)
   build/      BuildMode, PartsTray, GhostSlot, SnapAnimation, PlacementTool (dev only)
   ui/         HudPanel, Slider, SpecPicker, StatReadout, LessonCard, ModeToggle, theme.css (tokens)

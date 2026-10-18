@@ -1,6 +1,8 @@
 # Parts pipeline
 
 ## Who makes what
+Since Step 3b every part also has a code-built version (`src/parts/rb19/`). The table below is the plan for which parts may be swapped for AI/Blender models if they look better.
+
 | AI-generated (image → 3D) | Code-built (precise, movable) |
 |---|---|
 | Monocoque tub, nose cone, sidepods, engine cover/airbox, seat, steering wheel | Front wing: main plane, flaps, endplates |
