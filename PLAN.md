@@ -1,8 +1,8 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** 3. AI part test (branch `step-03-ai-part-test`, PR open). Decision: GO for AI + Blender on hero parts.
-- **Next action:** brake caliper runs automatically 2026-10-19 14:20 (scheduled task `f1-caliper-hunyuan3d`); then finish it in Blender and add it to the comparison screen.
+- **Current step:** 3. AI part test (PR #6). Step 3b (code-built car) is merged. Decision: GO for AI + Blender on hero parts.
+- **Next action:** brake caliper generates automatically 2026-10-19 14:20 (scheduled task `f1-caliper-hunyuan3d`); then finish it in Blender and add it to the comparison screen. Then Step 8 (section zoom) is in progress on branch `step-08-section-zoom`.
 - **Open questions:** none
 - **Blocked on:** daily free GPU allowance (one part a day)
 
@@ -18,7 +18,8 @@ Build a realistic Red Bull RB19 part by part, learn what each part does, tune it
 - [x] **2. Part catalog.** `src/data/parts.ts` with all Wave 1 parts, sections, build order, lessons; seed `docs/facts.md`. *Check:* page lists parts by section.
 
 ## Phase B: AI parts
-- [ ] **3. AI part test (go/no-go).** Turbo, brake caliper and sidepod on 2–3 free tools, compared side by side. *Check:* user judges "realistic enough".
+- [x] **3. AI part test (go/no-go).** GO (2026-10-18): Hunyuan3D 2.1 + Blender finish for hero parts. Turbo, brake caliper and sidepod on 2–3 free tools, compared side by side. *Check:* user judges "realistic enough".
+- [x] **3b. Code-built car (substep).** The whole RB19, exterior and internals, built from code: lofted bodywork, NACA aerofoil wings, lathe-turned wheels and engine parts. FIA-sized (tests check every wing vertex against the real FIA reference volumes), realistic materials + hologram toggle, X-ray to see internals, click a part to read its lesson. *Check:* compare with AI parts and decide which route each part takes.
 - [ ] **4. Part production.** Work through the AI parts list in `docs/parts-pipeline.md` (runs alongside C–E).
 
 ## Phase C: Realistic car on screen

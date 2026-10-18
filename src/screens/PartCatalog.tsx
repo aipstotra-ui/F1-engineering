@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { CAR_INTRO, SECTIONS, partsInSection, type FactId, type Part } from '../data/parts.ts'
+import { useCarStore } from '../state/carStore.ts'
 
 // Shows which docs/facts.md rows back up a lesson's numbers.
 function FactList({ facts }: { facts: FactId[] }) {
@@ -8,19 +9,27 @@ function FactList({ facts }: { facts: FactId[] }) {
 }
 
 function PartRow({ part }: { part: Part }) {
-  const [open, setOpen] = useState(false)
+  // The selected part (picked here or in the 3D view) is the one whose lesson is open.
+  const open = useCarStore((s) => s.selectedPartId === part.id)
+  const selectPart = useCarStore((s) => s.selectPart)
+  const row = useRef<HTMLLIElement>(null)
+
+  // A part clicked in the 3D view scrolls into sight here, with its lesson open.
+  useEffect(() => {
+    if (open) row.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [open])
 
   return (
-    <li className="part">
+    <li className={open ? 'part selected' : 'part'} ref={row}>
       <button
         className="part-header"
-        onClick={() => setOpen(!open)}
+        onClick={() => selectPart(part.id)}
         aria-expanded={open}
         aria-controls={`lesson-${part.id}`}
       >
         <span className="part-step">{part.buildStep}</span>
         <span className="part-name">{part.name}</span>
-        <span className={`part-source part-source-${part.source}`}>{part.source === 'ai' ? 'AI model' : 'Code'}</span>
+        <span className={`part-source part-source-${part.source}`}>{part.source === 'ai' ? 'AI planned' : 'Code'}</span>
       </button>
       {open && (
         <div className="part-lesson" id={`lesson-${part.id}`}>
