@@ -1,11 +1,10 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** 3. AI part test (branch `step-03-ai-part-test`)
-- **Done:** turbo generated with Hunyuan3D 2.1, cleaned, finished in Blender; side-by-side with the code-built turbo (`assets-raw/blender/turbo-comparison.png`).
-- **Next action:** user decides go/no-go for the AI + Blender route; then the brake caliper (next free run), then PR.
-- **Open questions:** go/no-go; which parts are "hero" parts worth AI
-- **Blocked on:** user decision
+- **Current step:** 3. AI part test (branch `step-03-ai-part-test`, PR open). Decision: GO for AI + Blender on hero parts.
+- **Next action:** brake caliper runs automatically 2026-10-19 14:20 (scheduled task `f1-caliper-hunyuan3d`); then finish it in Blender and add it to the comparison screen.
+- **Open questions:** none
+- **Blocked on:** daily free GPU allowance (one part a day)
 
 ---
 

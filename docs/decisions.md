@@ -28,4 +28,5 @@ One line each, newest at the bottom. Don't re-ask these; append new ones.
 - 2026-10-17: Every generated/downloaded .glb passes `scripts/check-glb.mjs` before use.
 - 2026-10-17: Stay on the free Hugging Face tier: one AI 3D run per day from the queue in `docs/parts-pipeline.md`; Blender covers finishing and bodywork.
 - 2026-10-17: NVIDIA API (TRELLIS v1, trial credits only) skipped: older model than Hugging Face's Hunyuan3D 2.1 / TRELLIS.2 and not free long-term. AI starting shapes come from Hunyuan3D 2.1 on the free HF tier; Blender (MCP for Blender) does finishing.
-- 2026-10-18: Turbo test result: Hunyuan3D 2.1 + Blender finish is far more detailed and realistic than the code-built turbo; raw AI output is too chrome-like to use without finishing. Go/no-go for the AI route awaits the user's call.
+- 2026-10-18: Turbo test result: Hunyuan3D 2.1 + Blender finish is far more detailed and realistic than the code-built turbo; raw AI output is too chrome-like to use without finishing. 
+- 2026-10-18: GO: hero parts (turbo, brake calipers, V6 engine, gearbox, MGU-K, steering wheel, uprights, exhaust) use Hunyuan3D 2.1 + Blender finishing, one per free daily run; all other parts stay code-built.

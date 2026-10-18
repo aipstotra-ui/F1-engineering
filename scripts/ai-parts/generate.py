@@ -8,11 +8,13 @@
   uv run scripts/ai-parts/generate.py hunyuan3d-2.1 <part>       image -> textured 3D
   uv run scripts/ai-parts/generate.py trellis.2 <part>           image -> textured 3D
 
+Set F1_PROJECT_ROOT to the main project folder when running from another checkout.
 Needs a Hugging Face login (`uvx --from huggingface_hub hf auth login`); the free tier allows
 about one 3D run per day. Outputs go to assets-raw/ (git-ignored). Prompts live in prompts.py.
 Always run `node scripts/check-glb.mjs` on a new .glb before opening it anywhere.
 """
 
+import os
 import shutil
 import sys
 import time
@@ -23,7 +25,8 @@ from gradio_client import Client, handle_file
 sys.path.insert(0, str(Path(__file__).parent))
 from prompts import PROMPTS, STYLE  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
+# F1_PROJECT_ROOT lets the script run from another checkout (e.g. a git worktree) but use the project's assets-raw/.
+ROOT = Path(os.environ.get("F1_PROJECT_ROOT") or Path(__file__).resolve().parents[2])
 RAW = ROOT / "assets-raw"
 
 

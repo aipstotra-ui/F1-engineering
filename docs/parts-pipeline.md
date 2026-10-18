@@ -44,13 +44,19 @@ AI tools do poorly on thin, sharp shapes, so those parts are built in code.
 4. Shade smooth by angle (~40°); export GLB with `use_selection` and `use_active_scene`; run check-glb, then clean-part.
 
 ## Daily AI queue (free tier: one 3D run per day)
-Run `uv run scripts/ai-parts/generate.py <tool> <part>`, then `node scripts/check-glb.mjs` on the result.
+Hero parts get AI + Blender (decided 2026-10-18); every other part stays code-built unless it looks clearly worse.
+Run `F1_PROJECT_ROOT=/Users/aic/Desktop/F1 uv run scripts/ai-parts/generate.py hunyuan3d-2.1 <part>`, then `node scripts/check-glb.mjs`, then finish in Blender (recipe above).
 | # | Part | Tool | Status |
 |---|---|---|---|
-| 1 | turbocharger | hunyuan3d-2.1 | done 2026-10-18 (1 try, 131 s) + Blender finish |
-| 2 | turbocharger | trellis.2 | to do |
-| 3 | brake-caliper | winner of 1–2 | to do |
-| — | sidepods | Blender (hand-modelled) | waits for Blender |
+| 1 | turbocharger | hunyuan3d-2.1 + Blender | done 2026-10-18 (1 try, 131 s) |
+| 2 | brake-caliper | hunyuan3d-2.1 + Blender | scheduled 2026-10-19 14:20; the reference picture includes a brake disc, to be cut away in Blender |
+| 3 | v6-engine | hunyuan3d-2.1 + Blender | needs a reference picture (a separate day: pictures use GPU time too) |
+| 4 | gearbox | hunyuan3d-2.1 + Blender | needs a reference picture |
+| 5 | mgu-k | hunyuan3d-2.1 + Blender | needs a reference picture |
+| 6 | steering-wheel | hunyuan3d-2.1 + Blender | needs a reference picture |
+| 7 | front/rear uprights | hunyuan3d-2.1 + Blender | needs a reference picture |
+| 8 | exhaust | hunyuan3d-2.1 + Blender | needs a reference picture; thin pipes may suit Blender modelling better |
+| — | sidepods | Blender (hand-modelled) | later |
 
 ## Part sources & licences
 | Part ID | Tool | Date | Licence / terms | Notes |
