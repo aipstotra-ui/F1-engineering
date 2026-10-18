@@ -24,7 +24,24 @@ export const TEST_PARTS: TestPart[] = [
 ]
 
 // Filled in as parts are generated; see the sources table in docs/parts-pipeline.md.
-export const CANDIDATES: Candidate[] = []
+export const CANDIDATES: Candidate[] = [
+  {
+    partId: 'turbocharger',
+    tool: 'Hunyuan3D 2.1 (raw)',
+    licence: 'Tencent Hunyuan Community',
+    model: '/models/parts-test/hunyuan3d-2.1/turbocharger.glb',
+    triangles: 40000,
+    sizeMB: 0.93,
+  },
+  {
+    partId: 'turbocharger',
+    tool: 'Hunyuan3D 2.1 + Blender finish',
+    licence: 'Tencent Hunyuan Community',
+    model: '/models/parts-test/hunyuan3d-2.1-blender/turbocharger.glb',
+    triangles: 40000,
+    sizeMB: 1.89,
+  },
+]
 
 export function candidatesFor(partId: string): Candidate[] {
   return CANDIDATES.filter((candidate) => candidate.partId === partId)

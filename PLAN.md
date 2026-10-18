@@ -1,10 +1,11 @@
 # F1 Engineering Lab: roadmap
 
 ## Now
-- **Current step:** 3. AI part test (branch `step-03-ai-part-test`); Step 3b PR #5 open.
-- **Next action:** (1) User installs Blender + verified add-on (`assets-raw/tools/blender_mcp_addon_v2.1.9.py`), starts its server; MCP for Blender is registered for this project (telemetry off), restart the session to load it. (2) After the free HF allowance resets (~00:40, 2026-10-18): `uv run scripts/ai-parts/generate.py hunyuan3d-2.1 turbocharger`, then check-glb, clean, finish in Blender, compare with the code-built turbo.
-- **Open questions:** none
-- **Blocked on:** HF free GPU allowance (resets ~00:40 2026-10-18); Blender install
+- **Current step:** 3. AI part test (branch `step-03-ai-part-test`)
+- **Done:** turbo generated with Hunyuan3D 2.1, cleaned, finished in Blender; side-by-side with the code-built turbo (`assets-raw/blender/turbo-comparison.png`).
+- **Next action:** user decides go/no-go for the AI + Blender route; then the brake caliper (next free run), then PR.
+- **Open questions:** go/no-go; which parts are "hero" parts worth AI
+- **Blocked on:** user decision
 
 ---
 

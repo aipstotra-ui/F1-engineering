@@ -37,11 +37,17 @@ AI tools do poorly on thin, sharp shapes, so those parts are built in code.
 - File ≤ 5 MB hard cap; no unexpected extensions.
 - Generated only from the tools listed above.
 
+## Blender finishing recipe (what worked for the turbo)
+1. Import the raw .glb into its own scene; apply transforms; scale to the real size and centre.
+2. AI metal comes out mirror-chrome: remap roughness to satin (≈0.35–0.6), lift the base colour, add tints (e.g. heat on exhaust-side parts).
+3. Bake base colour (DIFFUSE, colour only) **with Metallic temporarily 0**, otherwise the bake comes out almost black, then bake ROUGHNESS; build a clean material from the baked images plus the original metallic channel.
+4. Shade smooth by angle (~40°); export GLB with `use_selection` and `use_active_scene`; run check-glb, then clean-part.
+
 ## Daily AI queue (free tier: one 3D run per day)
 Run `uv run scripts/ai-parts/generate.py <tool> <part>`, then `node scripts/check-glb.mjs` on the result.
 | # | Part | Tool | Status |
 |---|---|---|---|
-| 1 | turbocharger | hunyuan3d-2.1 | to do |
+| 1 | turbocharger | hunyuan3d-2.1 | done 2026-10-18 (1 try, 131 s) + Blender finish |
 | 2 | turbocharger | trellis.2 | to do |
 | 3 | brake-caliper | winner of 1–2 | to do |
 | — | sidepods | Blender (hand-modelled) | waits for Blender |
@@ -49,3 +55,5 @@ Run `uv run scripts/ai-parts/generate.py <tool> <part>`, then `node scripts/chec
 ## Part sources & licences
 | Part ID | Tool | Date | Licence / terms | Notes |
 |---|---|---|---|---|
+| turbocharger | Hunyuan3D 2.1 (HF Space tencent/Hunyuan3D-2.1) | 2026-10-18 | Tencent Hunyuan Community licence (outputs usable; licence territory excludes EU, UK, South Korea) | 40k tris, 2 × 2048 px PBR textures embedded as data URIs (one JPEG mislabelled PNG); cleaned to 0.40 m, 0.93 MB |
+| turbocharger (finished) | Hunyuan3D 2.1 + Blender 5.2.2 (MCP for Blender) | 2026-10-18 | as above | Roughness raised to satin (0.35–0.62), base colour brightened, bronze→blue heat tint on turbine end, baked to 1024 px; smooth by angle 40°; 1.89 MB. Work file: assets-raw/blender/turbocharger-finish.blend |

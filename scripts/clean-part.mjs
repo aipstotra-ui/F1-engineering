@@ -38,6 +38,19 @@ const io = new NodeIO()
 const doc = await io.read(rawPath)
 const trianglesBefore = countTriangles(doc)
 
+// 0. Some generators label JPEG textures as PNG; read the real type from the first bytes.
+function sniffImageType(bytes) {
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg'
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return 'image/png'
+  if (String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP') return 'image/webp'
+  return null
+}
+for (const texture of doc.getRoot().listTextures()) {
+  const image = texture.getImage()
+  const actual = image && sniffImageType(image)
+  if (actual && actual !== texture.getMimeType()) texture.setMimeType(actual)
+}
+
 // 1. Tidy up: merge duplicate data, drop unused data, join shared vertices.
 await doc.transform(dedup(), prune(), weld())
 

@@ -90,6 +90,24 @@ describe('check-glb', () => {
 })
 
 describe('clean-part', () => {
+  it('cleans a part whose JPEG texture is mislabelled as PNG', async () => {
+    const { default: sharp } = await import('sharp')
+    const jpeg = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#888' } }).jpeg().toBuffer()
+    const doc = new Document()
+    const buffer = doc.createBuffer()
+    const position = doc.createAccessor().setType('VEC3').setArray(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])).setBuffer(buffer)
+    const uv = doc.createAccessor().setType('VEC2').setArray(new Float32Array([0, 0, 1, 0, 0, 1])).setBuffer(buffer)
+    const texture = doc.createTexture().setImage(new Uint8Array(jpeg)).setMimeType('image/png')
+    const material = doc.createMaterial().setBaseColorTexture(texture)
+    const prim = doc.createPrimitive().setAttribute('POSITION', position).setAttribute('TEXCOORD_0', uv).setMaterial(material)
+    doc.createScene().addChild(doc.createNode().setMesh(doc.createMesh().addPrimitive(prim)))
+    const raw = join(dir, 'mislabelled.glb')
+    await new NodeIO().write(raw, doc)
+    const out = join(dir, 'mislabelled-clean.glb')
+    execFileSync('node', ['scripts/clean-part.mjs', raw, out, '0.5'], { encoding: 'utf8' })
+    expect(runCheck(out).code).toBe(0)
+  })
+
   it('centres the part, scales its longest side and keeps it safe', async () => {
     const out = join(dir, 'box-clean.glb')
     execFileSync('node', ['scripts/clean-part.mjs', join(dir, 'box.glb'), out, '0.5'], { encoding: 'utf8' })
